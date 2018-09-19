@@ -12,7 +12,7 @@ TableEntry symbolTable[MAX_SYMBOLS];
 typedef struct {
     int iter;
     const char *array[8];
-    int hexop;
+    int hexop; //hey
 } OpCodes;
 OpCodes allCodes[14];
 
@@ -46,8 +46,7 @@ int main () {
     allCodes[13].iter = 1;
     allCodes[13].array[0] = "XOR";
     allCodes[13].hexop = 0x9;
-
-
+    
     char str1[20]= {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     FILE * fptr;
     fptr = fopen("testing.txt", "r");
