@@ -125,7 +125,7 @@ int main () {
     char word1[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char word2[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     FILE *fptr;
-    fptr = fopen("source2.asm", "r");
+    fptr = fopen("source2.txt", "r");
     if (fptr == NULL) {
         printf("ERROR READING FILE");
     }
@@ -851,8 +851,8 @@ void STW(FILE* fp){
 
 void TRAP(FILE* fp, char word[20]){
     char wordr[5] = {0, 0, 0, 0, 0};             //this is to read file into
-    fscanf(fp, "%s", wordr);                     //get the next word
     if(!strcmp(word,"TRAP")){
+        fscanf(fp, "%s", wordr);                     //get the next word
         if(!strcmp(wordr,"x25")){
             printf("0xF025\n");
         }
