@@ -9,8 +9,14 @@
 /Users/JuliaRebello/CLionProjects/Assembler/main.c
 stdio.h
 -
+stdbool.h
+-
 stdlib.h
 -
 string.h
+-
+ctype.h
+-
+math.h
 -
 
