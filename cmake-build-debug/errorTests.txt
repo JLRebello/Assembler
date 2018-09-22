@@ -1,0 +1,14 @@
+	.ORIG x3001	;error code 3  
+ 	LEA R1, Data1	;error code 1 
+	MUL R0, R0, R0  ;error code 2 
+AND	AND R0, R1, #4	;error code 4 
+	ABC AY		;error code 2 
+	ADD R0, R1, #20 ;error code 3 
+	ADD R0, R1	;error code 4 
+AY	.FILL		;error code 4 
+	ADD R1, #2, R3	;error code 4 
+	ADD R1, R9, R2	;error code 4 
+	AND R1, R0, 1 	;error code 4 
+
+
+	.END
