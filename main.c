@@ -50,7 +50,6 @@ void XOR(FILE* fp, char str[20]);
 
 int main () {
     int STCtr = 0;                  //SYMBOL TABLE COUNTER
-    char test = 0;                  //this lil guy will test for semicolons
     BAdd = 0;                       //address counter starting with add specified by .ORIG
 
     allCodes[0].iter = 1;
@@ -126,7 +125,7 @@ int main () {
     char word1[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char word2[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     FILE *fptr;
-    fptr = fopen("source2.txt", "r");
+    fptr = fopen("source.asm", "r");
     if (fptr == NULL) {
         printf("ERROR READING FILE\n");
     }
@@ -168,7 +167,7 @@ int main () {
                 BAdd += 2;                                      //increment address counter
             }
                 //below, we check if the word1 is alphanumeric, doesnt begin with x, and isn't IN, OUT, GETC, or PUTS
-            else if ((isAlphaNum(word1)) && (test != 'x') && (strcmp(word1, "IN")) && (strcmp(word1, "OUT")) &&
+            else if ((isAlphaNum(word1)) && (word1[0] != 'x') && (strcmp(word1, "IN")) && (strcmp(word1, "OUT")) &&
                      (strcmp(word1, "GETC")) && (strcmp(word1, "PUTS")) && (!isValid(word1))) {
                 //if word1 is invalid opcode and meets standards for label, but word2 is valid opcode, word1 is label
                 symbolTable[STCtr].address = BAdd;
@@ -197,14 +196,13 @@ int main () {
 
     while (strcmp(word1, ".END")) {
         fscanf(fptr, "%s", word1);
-        test = word1[0];                    //this is to catch semicolons
-        if (test == ';') {
+        if (word1[0]== ';') {
             fptr = moveOn(fptr);            //move on to the next line of the document
         } else if (!strcmp(word1, ".ORIG")) {  //SURPRISE! strcmp returns 0 if they're the same!
             fscanf(fptr, "%s", word1);
-            test = word1[0];
-            if ((test == 'x') || (test == '#')) {
-                if (test == 'x') {
+            word1[0]= word1[0];
+            if ((word1[0]== 'x') || (word1[0]== '#')) {
+                if (word1[0] == 'x') {
                     BAdd = (int) strtol(word1+1, NULL, 16); //grab address where the program begins. word+1 to avoid x
                     if((BAdd%2)==1){
                         printf("ERROR CODE 3: INVALID CONSTANT\n");          //prog cant start at odd address
@@ -229,9 +227,8 @@ int main () {
             fptr = moveOn(fptr);            //move on to the next line of the document
         } else if (!strcmp(word1, ".FILL")) {
             fscanf(fptr, "%s", word1);
-            test = word1[0];
-            if ((test == 'x') || (test == '#')) {
-                if (test == 'x') {
+            if ((word1[0] == 'x') || (word1[0]== '#')) {
+                if (word1[0] == 'x') {
                     BAdd = (int) strtol(word1 + 1, NULL, 16); //grab address where the program begins. word+1 b/c you want to avoid x
                     printf("0x");
                     printf("%04X\n", BAdd); //want this to print in hex
