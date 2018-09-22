@@ -114,11 +114,12 @@ int main () {
 
     allCodes[12].iter = 2;
     allCodes[12].array[0] = "TRAP";
-    allCodes[12].array[1] = "HALT"; //added this because it needed to be recognized as TRAP x25
+    allCodes[12].array[1] = "HALT";
     allCodes[12].hexop = 0xF000;
 
-    allCodes[13].iter = 1;
+    allCodes[13].iter = 2;
     allCodes[13].array[0] = "XOR";
+    allCodes[13].array[1] = "NOT";
     allCodes[13].hexop = 0x9000;
 
 
@@ -127,7 +128,7 @@ int main () {
     FILE *fptr;
     fptr = fopen("source2.txt", "r");
     if (fptr == NULL) {
-        printf("ERROR READING FILE");
+        printf("ERROR READING FILE\n");
     }
 
 //***********************************************************************************************************************************
@@ -136,39 +137,39 @@ int main () {
 
     while (strcmp(word1, ".END")) {
         fscanf(fptr, "%s", word1);
-        test = word1[0];                    //this is to catch semicolons
-        if ((test == ';')||(!strcmp(word1,"NOP"))) {
-            fptr = moveOn(fptr);            //move on to the next line of the document
-        } else if (!strcmp(word1, ".ORIG")) {  //SURPRISE! strcmp returns 0 if they're the same!
+        if ((word1[0] == ';')||(!strcmp(word1,"NOP"))) {
+            fptr = moveOn(fptr);                                //move on to the next line of the document
+        } else if (!strcmp(word1, ".ORIG")) {                   //SURPRISE! strcmp returns 0 if they're the same!
             fscanf(fptr, "%s", word1);
-            test = word1[0];
-            if ((test == 'x') || (test == '#')) {
-                if (test == 'x') {
-                    BAdd = (int) strtol(word1 + 1, NULL,
-                                        16); //grab address where the program begins. word+1 b/c you want to avoid x
+            if ((word1[0] == 'x') || (word1[0] == '#')) {
+                if (word1[0] == 'x') {
+                    BAdd = (int) strtol(word1 + 1, NULL, 16);   //grab address of prog word+1 b/c you want to avoid x
                 } else {
                     BAdd = (int) strtol(word1 + 1, NULL, 10);
                 }
             } else {
-                printf("ERROR CODE 4: INVALID ADDRESS\n");//if hex is not in correct format
+                printf("ERROR CODE 4: OTHER ERROR\n");          //if hex is not in correct format
+            }
+            if((BAdd%2)==1){
+                printf("ERROR CODE 3: INVALID CONSTANT\n");          //prog cant start at odd address
             }
         } else if (!strcmp(word1, ".FILL")) {
-            fptr = moveOn(fptr);            //move on to the next line of the document
-            BAdd += 2;                      //increment address counter
-        } else if (isValid(word1)) {           //if word1 is VALID
-            fptr = moveOn(fptr);            //move on to the next line of the document
-            BAdd += 2;                  //increment address counter
+            fptr = moveOn(fptr);                                //move on to the next line of the document
+            BAdd += 2;                                          //increment address counter
+        } else if (isValid(word1)) {                            //if word1 is VALID
+            fptr = moveOn(fptr);                                //move on to the next line of the document
+            BAdd += 2;                                          //increment address counter
         } else if ((!isValid(word1)) && (strcmp(word1, ".END"))) {         //if word1 is NOT VALID and NOT .END
-            fscanf(fptr, "%s", word2);      //if its not, check if word2 is a valid opcode
+            fscanf(fptr, "%s", word2);                          //if its not, check if word2 is a valid opcode
             //if word1 and word2 are both invalid opcodes, ERROR, but word2 can be .END or .FILL
             if ((!isValid(word2)) && (strcmp(word2, ".END")) && (strcmp(word2, ".FILL"))) {
                 printf("ERROR CODE 2: INVALID OPCODE\n");
-                fptr = moveOn(fptr);        //move on to the next line of the document
-                BAdd += 2;                  //increment address counter
+                fptr = moveOn(fptr);                            //move on to the next line of the document
+                BAdd += 2;                                      //increment address counter
             }
                 //below, we check if the word1 is alphanumeric, doesnt begin with x, and isn't IN, OUT, GETC, or PUTS
             else if ((isAlphaNum(word1)) && (test != 'x') && (strcmp(word1, "IN")) && (strcmp(word1, "OUT")) &&
-                     (strcmp(word1, "GETC")) && (strcmp(word1, "PUTS"))) {
+                     (strcmp(word1, "GETC")) && (strcmp(word1, "PUTS")) && (!isValid(word1))) {
                 //if word1 is invalid opcode and meets standards for label, but word2 is valid opcode, word1 is label
                 symbolTable[STCtr].address = BAdd;
                 strncpy(symbolTable[STCtr].label, word1, 20);
@@ -176,12 +177,12 @@ int main () {
                 fptr = moveOn(fptr);        //move on to the next line of the document
                 BAdd += 2;                  //increment address counter
             } else {
-                printf("ERROR CODE 4: OTHER ERROR: INVALID LABEL");
+                printf("ERROR CODE 4: OTHER ERROR\n");
             }
         }
 
     }
-    printSymbolTable();             //******************************************************** comment this out before turning in!
+    printSymbolTable();                   //******************************************************** comment this out before turning in!
     rewind(fptr);
     for (int i = 0; i < 20; i++) {  //clear word1
         word1[i] = 0;
@@ -189,7 +190,7 @@ int main () {
     for (int i = 0; i < 20; i++) {  //clear word2
         word2[i] = 0;
     }
-
+    printf("\nSTARTING SECOND PASS\n\n"); //******************************************************** comment this out before turning in!
 //***********************************************************************************************************************************
 //************************************* SECOND PASS TO ASSEMBLE *********************************************************************
 //***********************************************************************************************************************************
@@ -205,15 +206,25 @@ int main () {
             if ((test == 'x') || (test == '#')) {
                 if (test == 'x') {
                     BAdd = (int) strtol(word1+1, NULL, 16); //grab address where the program begins. word+1 to avoid x
-                    printf("0x");
-                    printf("%04X\n", BAdd); //want this to print in hex
+                    if((BAdd%2)==1){
+                        printf("ERROR CODE 3: INVALID CONSTANT\n");          //prog cant start at odd address
+                    }
+                    else {
+                        printf("0x");
+                        printf("%04X\n", BAdd); //want this to print in hex
+                    }
                 } else {
                     BAdd = (int) strtol(word1 + 1, NULL, 10);
-                    printf("0x");
-                    printf("%04X\n", BAdd); //want this to print in hex
+                    if((BAdd%2)==1){
+                        printf("ERROR CODE 4: OTHER ERROR\n");          //prog cant start at odd address
+                    }
+                    else {
+                        printf("0x");
+                        printf("%04X\n", BAdd); //want this to print in hex
+                    }
                 }
             } else {
-                printf("ERROR CODE 4: OTHER ERROR: INVALID ADDRESS\n");//if hex is not in correct format
+                printf("ERROR CODE 4: OTHER ERROR\n");//if hex is not in correct format
             }
             fptr = moveOn(fptr);            //move on to the next line of the document
         } else if (!strcmp(word1, ".FILL")) {
@@ -230,7 +241,7 @@ int main () {
                     printf("%04X\n", BAdd); //want this to print in hex
                 }
             } else {
-                printf("ERROR CODE 4: OTHER ERROR: INVALID ADDRESS\n");//if hex is not in correct format
+                printf("ERROR CODE 4: OTHER ERROR\n");
             }
             fptr = moveOn(fptr);            //move on to the next line of the document
         }
@@ -296,6 +307,8 @@ int main () {
         }
         else if((!isLabel(word1))&&(strcmp(word1,".END"))){
             printf("ERROR CODE 2: INVALID OPCODE\n");
+            moveOn(fptr);
+            BAdd+=2;
         }
     }
     fclose(fptr); //this goes at the end of program
@@ -421,15 +434,15 @@ void ADD(FILE* fp){
     int num2 = 0;                                       //this is the decimal rep of binary of SR1
     int num3 = 0;                                       //this is the decimal rep of binary of SR2 or imm5
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num1=num1+numToBits((word[1]-'0'),0,11,9);        //set bits 11-9 with DR
     }
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num2=num2+numToBits((word[1]-'0'),0,8,6);        //set bits 8-6 with DR
@@ -443,7 +456,7 @@ void ADD(FILE* fp){
             num3= (int)strtol(word+1,NULL,10);
         }
         if(num3>31){                                //if immediate is too larte
-            printf("ERROR CODE 3: INVALID CONSTANT");
+            printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
             if (num3 < 0) { num3 += 32; }        //if negative immediate
@@ -452,8 +465,8 @@ void ADD(FILE* fp){
             printf("%04X\n", num1+num2+num3+allCodes[0].hexop); //want this to print in hex//bit 5 is 1
         }
     }
-    else if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    else if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else if (word[0]=='R'){                         //if second source operand
         num3=num3+numToBits((word[1]-'0'),0,2,0);        //set bits 2-0 with SR2
@@ -469,15 +482,16 @@ void AND(FILE* fp){
     int num2 = 0;                                       //this is the decimal rep of binary of SR1
     int num3 = 0;                                       //this is the decimal rep of binary of SR2 or imm5
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
+        return;
     }
     else{
         num1=num1+numToBits((word[1]-'0'),0,11,9);        //set bits 11-9 with DR
     }
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num2=num2+numToBits((word[1]-'0'),0,8,6);        //set bits 8-6 with DR
@@ -491,7 +505,7 @@ void AND(FILE* fp){
             num3= (int)strtol(word+1,NULL,10);
         }
         if(num3>31){                                //if immediate is too larte
-            printf("ERROR CODE 3: INVALID CONSTANT");
+            printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
             if (num3 < 0) { num3 += 32; }        //if negative immediate
@@ -500,8 +514,8 @@ void AND(FILE* fp){
             printf("%04X\n", num1+num2+num3+allCodes[1].hexop); //want this to print in hex//bit 5 is 1
         }
     }
-    else if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    else if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else if (word[0]=='R'){                         //if second source operand
         num3=num3+numToBits((word[1]-'0'),0,2,0);        //set bits 2-0 with SR2
@@ -534,7 +548,7 @@ void BR(FILE* fp, char word[20]){
         printf("%04X\n", num1+num2+allCodes[2].hexop);  //want this to print in hex
     }
     else {
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+        printf("ERROR CODE 1: UNDEFINED LABEL\n");
     }
     BAdd+=2;
 }
@@ -544,8 +558,8 @@ void JMP(FILE* fp, char word[20]){
     char wordr[5] = {0, 0, 0, 0, 0};             //this is to read file into
     fscanf(fp, "%s", wordr);                     //get the next word
     if(!strcmp(word,"JMP")){
-        if((wordr[0] != 'R')&&(!(wordr[1]<=0))&&(!(wordr[1]<8))&&(!((wordr[2] == 0)||(wordr[2] == ',')))){ //needs to be a valid register
-            printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+        if((wordr[0] != 'R')&&(!(wordr[1]<=0))&&(!(wordr[1]<8))&&(!((wordr[2] == 0)||(wordr[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+            printf("ERROR CODE 4: OTHER ERROR\n");
         }
         else{
             num=num+numToBits((wordr[1]-'0'),0,8,6);        //set bits 8-6 with BR
@@ -594,13 +608,13 @@ void JSR(FILE* fp, char word[20]){
             }
         }*/                                                     // can JSR take a direct offset??? has to be a label right??
         else{
-            printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+            printf("ERROR CODE 1: UNDEFINED LABEL\n");
         }
     }
 
     else if(!strcmp(word,"JSRR")){                      //JSRR
-        if((wordr[0] != 'R')&&(!(wordr[1]<=0))&&(!(wordr[1]<8))&&(!((wordr[2] == 0)||(wordr[2] == ',')))){ //needs to be a valid register
-            printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+        if((wordr[0] != 'R')&&(!(wordr[1]<=0))&&(!(wordr[1]<8))&&(!((wordr[2] == 0)||(wordr[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+            printf("ERROR CODE 4: OTHER ERROR\n");
         }
         else{
             num=num+numToBits((word[1]-'0'),0,5,0);        //set bits 5-0
@@ -617,16 +631,16 @@ void LDB(FILE* fp){
     int num2 = 0;                                       //this is the decimal rep of binary of BR
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num1=num1+numToBits((word[1]-'0'),0,11,9);        //set bits 11-9 with DR
     }
 
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num2=num2+numToBits((word[1]-'0'),0,8,6);        //set bits 8-6 with BR
@@ -634,11 +648,11 @@ void LDB(FILE* fp){
 
     fscanf(fp, "%s", word);                                             //get the offset
     if(word[0] != '#') {                                                //can the offset be in hex???
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+        printf("ERROR CODE 4: OTHER ERROR\n");
     } else{
         num3= (int)strtol(word+1,NULL,10);
         if(num3>63){
-            printf("ERROR CODE 3: INVALID CONSTANT");
+            printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
             printf("0x");
@@ -654,16 +668,16 @@ void LDW(FILE* fp){
     int num2 = 0;                                       //this is the decimal rep of binary of BR
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num1=num1+numToBits((word[1]-'0'),0,11,9);        //set bits 11-9 with DR
     }
 
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num2=num2+numToBits((word[1]-'0'),0,8,6);        //set bits 8-6 with BR
@@ -671,11 +685,11 @@ void LDW(FILE* fp){
 
     fscanf(fp, "%s", word);                                             //get the offset
     if(word[0] != '#') {                                                //can the offset be in hex???
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+        printf("ERROR CODE 4: OTHER ERROR\n");
     } else{
         num3= (int)strtol(word+1,NULL,10);
         if(num3>63){
-            printf("ERROR CODE 3: INVALID CONSTANT");
+            printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
             printf("0x");
@@ -691,8 +705,8 @@ void LEA(FILE* fp){      //we need an error here for when the offset is too far 
     int num2 = 0;                                       //this is the decimal rep of offset
     int offset = 0;                                     //this is to calculate offset of LEA
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num1=num1+numToBits((word[1]-'0'),0,11,9);        //set bits 11-9 with DR
@@ -727,7 +741,7 @@ void LEA(FILE* fp){      //we need an error here for when the offset is too far 
                    }
                }*/                                                     // can LEA take a direct offset??? has to be a label right??
     else{
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+        printf("ERROR CODE 1: UNDEFINED LABEL\n");
     }
     BAdd+=2;
 }
@@ -746,16 +760,16 @@ void SHF(FILE* fp, char word[20]){
     if(!strcmp(word,"RSHFA")){num1=48;}
 
     fscanf(fp, "%s", wordr);
-    if((wordr[0] != 'R')&&(!(wordr[1]<=0))&&(!(wordr[1]<8))&&(!((wordr[2] == 0)||(wordr[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((wordr[0] != 'R')&&(!(wordr[1]<=0))&&(!(wordr[1]<8))&&(!((wordr[2] == 0)||(wordr[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num1=num1+numToBits((wordr[1]-'0'),0,11,9);        //set bits 11-9 DR
     }
 
     fscanf(fp, "%s", wordr);
-    if((wordr[0] != 'R')&&(!(wordr[1]<=0))&&(!(wordr[1]<8))&&(!((wordr[2] == 0)||(wordr[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((wordr[0] != 'R')&&(!(wordr[1]<=0))&&(!(wordr[1]<8))&&(!((wordr[2] == 0)||(wordr[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num2=num2+numToBits((wordr[1]-'0'),0,8,6);        //set bits 8-6 SR
@@ -763,11 +777,11 @@ void SHF(FILE* fp, char word[20]){
 
     fscanf(fp, "%s", wordr);
     if(wordr[0] != '#') {
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+        printf("ERROR CODE 4: OTHER ERROR\n");
     } else{
         num3 = (int)strtol(wordr+1,NULL,10);
         if(num3>15){
-            printf("ERROR CODE 3: INVALID CONSTANT");
+            printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
             printf("0x");
@@ -782,16 +796,16 @@ void STB(FILE* fp){
     int num2 = 0;                                       //this is the decimal rep of binary of BR
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num1=num1+numToBits((word[1]-'0'),0,11,9);        //set bits 11-9 with DR
     }
 
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num2=num2+numToBits((word[1]-'0'),0,8,6);        //set bits 8-6 with BR
@@ -799,11 +813,11 @@ void STB(FILE* fp){
 
     fscanf(fp, "%s", word);                                             //get the offset
     if(word[0] != '#') {                                                //can the offset be in hex???
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+        printf("ERROR CODE 4: OTHER ERROR\n");
     } else{
         num3= (int)strtol(word+1,NULL,10);
         if(num3>63){
-            printf("ERROR CODE 3: INVALID CONSTANT");
+            printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
             printf("0x");
@@ -818,16 +832,16 @@ void STW(FILE* fp){
     int num2 = 0;                                       //this is the decimal rep of binary of BR
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num1=num1+numToBits((word[1]-'0'),0,11,9);        //set bits 11-9 with DR
     }
 
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num2=num2+numToBits((word[1]-'0'),0,8,6);        //set bits 8-6 with BR
@@ -835,11 +849,11 @@ void STW(FILE* fp){
 
     fscanf(fp, "%s", word);                                             //get the offset
     if(word[0] != '#') {                                                //can the offset be in hex???
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+        printf("ERROR CODE 4: OTHER ERROR\n");
     } else{
         num3= (int)strtol(word+1,NULL,10);
         if(num3>63){
-            printf("ERROR CODE 3: INVALID CONSTANT");
+            printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
             printf("0x");
@@ -857,7 +871,7 @@ void TRAP(FILE* fp, char word[20]){
             printf("0xF025\n");
         }
         else{
-            printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+            printf("ERROR CODE 4: OTHER ERROR\n");
         }
     }
     else if(!strcmp(word,"HALT")){
@@ -872,20 +886,20 @@ void XOR(FILE* fp, char word1[20]){
     int num2 = 0;                                       //this is the decimal rep of binary of SR1
     int num3 = 0;                                       //this is the decimal rep of binary of SR2 or imm5
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     else{
         num1=num1+numToBits((word[1]-'0'),0,11,9);        //set bits 11-9 with DR
     }
     fscanf(fp, "%s", word);
-    if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')))){ //needs to be a valid register
-        printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
-    }
-    else{
-        num2=num2+numToBits((word[1]-'0'),0,8,6);        //set bits 8-6 with DR
-    }
     if(!strcmp(word1,"XOR")) {
+        if((word[0] != 'R')&&(!(word[1]<=0))&&(!(word[1]<8))&&(!((word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+            printf("ERROR CODE 4: OTHER ERROR\n");
+        }
+        else{
+            num2=num2+numToBits((word[1]-'0'),0,8,6);        //set bits 8-6 with DR
+        }
         fscanf(fp, "%s", word);
         if ((word[0] == 'x') || (word[0] == '#')) {          //if immediate operand
             if (word[0] == 'x') {
@@ -893,8 +907,8 @@ void XOR(FILE* fp, char word1[20]){
             } else {
                 num3 = (int) strtol(word + 1, NULL, 10);
             }
-            if (num3 > 31) {                                //if immediate is too larte
-                printf("ERROR CODE 3: INVALID CONSTANT");
+            if (num3 > 31) {                                //if immediate is too large
+                printf("ERROR CODE 3: INVALID CONSTANT\n");
             } else {
                 if (num3 < 0) { num3 += 32; }        //if negative immediate
                 num3 += 32;                          //this is bit 5
@@ -903,7 +917,7 @@ void XOR(FILE* fp, char word1[20]){
             }
         } else if ((word[0] != 'R') && (!(word[1] <= 0)) && (!(word[1] < 8)) &&
                    (!((word[2] == 0) || (word[2] == ',')))) { //needs to be a valid register
-            printf("ERROR CODE 4: OTHER ERROR: UNEXPECTED OPERAND");
+            printf("ERROR CODE 4: OTHER ERROR\n");
         } else if (word[0] == 'R') {                         //if second source operand
             num3 = num3 + numToBits((word[1] - '0'), 0, 2, 0);        //set bits 2-0 with SR2
             printf("0x");
