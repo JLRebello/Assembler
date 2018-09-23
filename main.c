@@ -27,6 +27,7 @@ typedef struct {            //this is where we keep the iterations and opcode of
 OpCodes allCodes[14];
 
 int BAdd;                   //address counter starting with addr specified by .ORIG (oops I needed a Global Variable)
+FILE * pOutfile;
 
 //HELPER FUNCTIONS
 int getAddress(char str[]);     //gets address of a label
@@ -56,7 +57,16 @@ void TRAP(FILE* fp, char str[]);
 void XOR(FILE* fp, char str[]);
 
 
-int main () {
+int main (int argc, char* argv[]) {
+
+    char *prgName   = NULL;
+    char *iFileName = NULL;
+    char *oFileName = NULL;
+
+    prgName   = argv[0];
+    iFileName = argv[1];
+    oFileName = argv[2];
+
     int STCtr = 0;                  //SYMBOL TABLE COUNTER
     BAdd = 0;                       //address counter starting with add specified by .ORIG
 
@@ -129,14 +139,20 @@ int main () {
     allCodes[13].array[1] = "NOT";
     allCodes[13].hexop = 0x9000;
 
-
     char word1[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char word2[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
     FILE *fptr;
-    //TODO: read the name of the file from the command line arguments
-    fptr = fopen("source3.asm", "r");
+    //fptr = fopen("source.asm", "r");
+    fptr = fopen(iFileName, "r");
     if (fptr == NULL) {
-        printf("ERROR READING FILE\n");
+        printf("ERROR READING FILE 1\n");
+        exit(4);
+    }
+    pOutfile = fopen(oFileName, "w" );
+    if (pOutfile == NULL) {
+        printf("ERROR READING FILE 2\n");
+        exit(4);
     }
 
 //***********************************************************************************************************************************
@@ -156,33 +172,45 @@ int main () {
                     BAdd = (int) strtol(word1 + 1, NULL, 10);
                 }
             } else {
-                //TODO: exit instead - exit(4)
-                printf("ERROR CODE 4: OTHER ERROR\n");              //if hex is not in correct format
-                //exit(4);
+                //printf("ERROR CODE 4: OTHER ERROR\n");              //if hex is not in correct format
+                exit(4);
             }
             if((BAdd%2)==1){
-                //TODO: exit instead - exit(3)
-                printf("ERROR CODE 3: INVALID CONSTANT\n");          //prog cant start at odd address
+                //printf("ERROR CODE 3: INVALID CONSTANT\n");          //prog cant start at odd address
+                exit(3);
             }
         } else if (!strcmp(word1, ".FILL")) {
             fptr = moveOn(fptr);                                //move on to the next line of the document
             BAdd += 2;                                          //increment address counter
         } else if (isValid(word1)) {                            //if word1 is VALID
-            fptr = moveOn(fptr);                                //move on to the next line of the document
-            BAdd += 2;                                          //increment address counter
+            if((strcmp(word1,"RET")) && (strcmp(word1,"RTI")) && (strcmp(word1,"HALT"))){
+                fscanf(fptr, "%s", word1);
+                if(isValid(word1)){
+                    //printf("ERROR CODE 4: OTHER ERROR\n");
+                    //fptr = moveOn(fptr);//move on to the next line of the document
+                    //BAdd += 2;
+                    exit(4);
+                }
+                else {
+                    fptr = moveOn(fptr);//move on to the next line of the document
+                    BAdd += 2;
+                }
+            }
+            else {
+                fptr = moveOn(fptr);                                //move on to the next line of the document
+                BAdd += 2;                                          //increment address counter
+            }
         } else if ((!isValid(word1)) && (strcmp(word1, ".END"))) {         //if word1 is NOT VALID and NOT .END
             fscanf(fptr, "%s", word2);                          //if its not, check if word2 is a valid opcode
-            //if word1 and word2 are both invalid opcodes, ERROR, but word2 can be .END or .FILL
-            if ((!isValid(word2)) && (strcmp(word2, ".END")) && (strcmp(word2, ".FILL"))) {
-                //TODO: exit instead - exit(2)
-                printf("ERROR CODE 2: INVALID OPCODE\n");
-                //TODO: we won't need these two lines anymore after we start exiting right?
-                fptr = moveOn(fptr);                            //move on to the next line of the document
-                BAdd += 2;                                      //increment address counter
+            //if word1 and word2 are both invalid opcodes, ERROR, but word2 can be .FILL
+            if ((!isValid(word2)) && (strcmp(word2, ".FILL"))) {
+                //printf("ERROR CODE 2: INVALID OPCODE\n");
+                //fptr = moveOn(fptr);                            //move on to the next line of the document
+                //BAdd += 2;                                      //increment address counter
+                exit(2);
             }
                 //below, we check if the word1 is alphanumeric, doesnt begin with x, and isn't IN, OUT, GETC, or PUTS
-            else if ((isAlphaNum(word1)) && ((word1[0] < 48) || (word1[0] > 57)) && (word1[0] != 'x') && (word1[0] != 'X') && (word1[0] != 'X') && (strcmp(word1, "IN")) && (strcmp(word1, "OUT")) &&
-                     (strcmp(word1, "GETC")) && (strcmp(word1, "PUTS")) && (!isValid(word1)) && (!(isLabel(word1)))) {
+            else if ((isAlphaNum(word1)) && ((word1[0] < 48) || (word1[0] > 57)) && (word1[0] != 'x') && (word1[0] != 'X') && (word1[0] != 'X') && (strcmp(word1, "IN")) && (strcmp(word1, "OUT")) && (strcmp(word1, "GETC")) && (strcmp(word1, "PUTS")) && (!isValid(word1)) && (!(isLabel(word1)))) {
                 //if word1 is invalid opcode and meets standards for label, but word2 is valid opcode, word1 is label
                 symbolTable[STCtr].address = BAdd;
                 strncpy(symbolTable[STCtr].label, word1, 21);
@@ -190,11 +218,10 @@ int main () {
                 fptr = moveOn(fptr);        //move on to the next line of the document
                 BAdd += 2;                  //increment address counter
             } else {
-                //TODO: exit instead - exit(4)
-                printf("ERROR CODE 4: OTHER ERROR\n");
+                //printf("ERROR CODE 4: OTHER ERROR\n");
+                exit(4);
             }
         }
-
     }
     //TODO: get rid of this next line when we're ready
     printSymbolTable();
@@ -224,29 +251,31 @@ int main () {
                 if (word1[0] == 'x') {
                     BAdd = (int) strtol(word1+1, NULL, 16); //grab address where the program begins. word+1 to avoid x
                     if((BAdd%2)==1){
-                        //TODO: exit instead - exit(3)
-                        printf("ERROR CODE 3: INVALID CONSTANT\n");          //program cant start at odd address
+                        //printf("ERROR CODE 3: INVALID CONSTANT\n");          //program cant start at odd address
+                        exit(3);
                     }
                     else {
-                        //TODO: change this so it goes into the .obj file from the command line instead
                         printf("0x");
                         printf("%04X\n", BAdd);                             //want this to print in hex
+                        fprintf(pOutfile, "0x");
+                        fprintf(pOutfile, "%04X\n", BAdd);
                     }
                 } else {
                     BAdd = (int) strtol(word1 + 1, NULL, 10);
                     if((BAdd%2)==1){
-                        //TODO: exit instead - exit(3)
-                        printf("ERROR CODE 3: INVALID CONSTANT\n");          //prog cant start at odd address
+                        //printf("ERROR CODE 3: INVALID CONSTANT\n");          //prog cant start at odd address
+                        exit(3);
                     }
                     else {
-                        //TODO: change this so it goes into the .obj file from the command line instead
                         printf("0x");
                         printf("%04X\n", BAdd);                             //want this to print in hex
+                        fprintf(pOutfile, "0x");
+                        fprintf(pOutfile, "%04X\n", BAdd);
                     }
                 }
             } else {
-                //TODO: exit instead - exit(4)
-                printf("ERROR CODE 4: OTHER ERROR\n");//if hex is not in correct format
+                //printf("ERROR CODE 4: OTHER ERROR\n");//if hex is not in correct format
+                exit(4);
             }
             fptr = moveOn(fptr);                                //move on to the next line of the document
         } else if (!strcmp(word1, ".FILL")) {
@@ -254,18 +283,20 @@ int main () {
             if ((word1[0] == 'x') || (word1[0]== '#')) {
                 if (word1[0] == 'x') {
                     BAdd = (int) strtol(word1 + 1, NULL, 16);   //grab the constant that .FILL places at that address
-                    //TODO: put this in the .obj file instead
                     printf("0x");
                     printf("%04X\n", BAdd);                     //want this to print in hex
+                    fprintf(pOutfile, "0x");
+                    fprintf(pOutfile, "%04X\n", BAdd);
                 } else {
                     BAdd = (int) strtol(word1 + 1, NULL, 10);
-                    //TODO: put this in the .obj file instead
                     printf("0x");
                     printf("%04X\n", BAdd);                     //want this to print in hex
+                    fprintf(pOutfile, "0x");
+                    fprintf(pOutfile, "%04X\n", BAdd);
                 }
             } else {
-                //TODO: exit instead - exit(4)
-                printf("ERROR CODE 4: OTHER ERROR\n");
+                //printf("ERROR CODE 4: OTHER ERROR\n");
+                exit(4);
             }
             fptr = moveOn(fptr);                    //move on to the next line of the document
         } else if(isValid(word1)){                  //if the word is a valid opcode
@@ -315,11 +346,10 @@ int main () {
             moveOn(fptr);
         }
         else if((!isLabel(word1))&&(strcmp(word1,".END"))){
-            //TODO: exit instead - exit(2)
-            printf("ERROR CODE 2: INVALID OPCODE\n");
-            //TODO: once we change to exiting I don't think we'll need the next two lines
-            moveOn(fptr);
-            BAdd+=2;
+            //printf("ERROR CODE 2: INVALID OPCODE\n");
+           // moveOn(fptr);
+            //BAdd+=2;
+            exit(2);
         }
     }
     fclose(fptr); //this goes at the end of program
@@ -447,16 +477,16 @@ void ADD(FILE* fp){
     int num3 = 0;                                       //this is the decimal rep of binary of SR2 or imm5
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);        //set bits 11-9 with DR
     }
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);          //set bits 8-6 with SR1
@@ -470,26 +500,28 @@ void ADD(FILE* fp){
             num3= (int)strtol(word+1, NULL, 10);
         }
         if((num3 > 15)||(num3 < -16)){                             //if immediate is out of range (-16,15)
-            //TODO: exit instead - exit(3)
-            printf("ERROR CODE 3: INVALID CONSTANT\n");
+            //printf("ERROR CODE 3: INVALID CONSTANT\n");
+            exit(3);
         }
         else {
             if (num3 < 0) {num3 += 32;}        //if negative immediate
             num3 += 32;                          //this is bit 5
-            //TODO: output this to the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[0].hexop); //want this to print in hex//bit 5 is 1
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[0].hexop);
         }
     }
     else if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else if (word[0] == 'R'){                                       //if second source operand
         num3 = num3 + numToBits((word[1] - '0'), 0, 2, 0);          //set bits 2-0 with SR2
-        //TODO: output this to the .obj file instead
         printf("0x");
         printf("%04X\n", num1 + num2 + num3 + allCodes[0].hexop);   //want this to print in hex
+        fprintf(pOutfile, "0x");
+        fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[0].hexop);
     }
     BAdd += 2;
 }
@@ -501,17 +533,16 @@ void AND(FILE* fp){
     int num3 = 0;                                       //this is the decimal rep of binary of SR2 or imm5
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
-        return;
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);        //set bits 11-9 with DR
     }
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);          //set bits 8-6 with SR1
@@ -525,26 +556,28 @@ void AND(FILE* fp){
             num3 = (int)strtol(word + 1, NULL, 10);
         }
         if((num3 > 15)||(num3 < -16)){                              //if immediate is out of range (-16,15)
-            //TODO: exit instead - exit(3)
-            printf("ERROR CODE 3: INVALID CONSTANT\n");
+            //printf("ERROR CODE 3: INVALID CONSTANT\n");
+            exit(3);
         }
         else {
             if (num3 < 0) {num3 += 32;}                 //if negative immediate
             num3 += 32;                                 //this is bit 5
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[1].hexop); //want this to print in hex//bit 5 is 1
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[1].hexop);
         }
     }
     else if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else if (word[0] == 'R'){                         //if second source operand
         num3 = num3 + numToBits((word[1] - '0'), 0, 2, 0);        //set bits 2-0 with SR2
-        //TODO: put this in the .obj file instead
         printf("0x");
         printf("%04X\n", num1 + num2 + num3 + allCodes[1].hexop); //want this to print in hex
+        fprintf(pOutfile, "0x");
+        fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[1].hexop);
     }
     BAdd += 2;
 }
@@ -568,19 +601,20 @@ void BR(FILE* fp, char word1[]){
         offset = getAddress(word);                              //get address
         offset = (((offset - 2) - BAdd) / 2);                   //get offset from incremented PC
         if((offset < -256) || (offset > 255)){
-            //TODO: exit instead - exit(4)
-            printf("ERROR CODE 4: OTHER ERROR\n");
+            //printf("ERROR CODE 4: OTHER ERROR\n");
+            exit(4);
         }
         else {
             num2 = num2 + numToBits(offset, 0, 8, 0);//set bits 8-0 with DR
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + allCodes[2].hexop);          //want this to print in hex
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + allCodes[2].hexop);
         }
     }
     else {
-        //TODO: exit instead - exit(1)
-        printf("ERROR CODE 1: UNDEFINED LABEL\n");
+        //printf("ERROR CODE 1: UNDEFINED LABEL\n");
+        exit(1);
     }
     BAdd += 2;
 }
@@ -591,19 +625,20 @@ void JMP(FILE* fp, char word1[]){
     fscanf(fp, "%s", word);                     //get the next word
     if(!strcmp(word1, "JMP")){
         if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-            //TODO: exit instead - exit(4)
-            printf("ERROR CODE 4: OTHER ERROR\n");
+            //printf("ERROR CODE 4: OTHER ERROR\n");
+            exit(4);
         }
         else{
             num = num + numToBits((word[1] - '0'), 0, 8, 6);        //set bits 8-6 with BR
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num + allCodes[3].hexop);              //want this to print in hex
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num + allCodes[3].hexop);
         }
     }
     else if(!strcmp(word1, "RET")){
-        //TODO: put this in the .obj file instead
         printf("0xC1C0\n");
+        fprintf(pOutfile, "0xC1C0\n");
     }
     BAdd += 2;
 }
@@ -618,32 +653,34 @@ void JSR(FILE* fp, char word1[]){
             offset = getAddress(word);                          //get address
             offset = (((offset - 2) - BAdd) / 2);               //get offset from incremented PC
             if((offset < -1024) || (offset > 1023)){
-                //TODO: exit instead - exit(4)
-                printf("ERROR CODE 4: OTHER ERROR\n");
+                //printf("ERROR CODE 4: OTHER ERROR\n");
+                exit(4);
             }
             else {
                 num = num + numToBits(offset, 0, 10, 0);            //set bits 10-0 with DR
-                //TODO: put this in the .obj file instead
                 printf("0x");
                 printf("%04X\n", num + 2048 + allCodes[4].hexop);   //want this to print in hex//adding 2048 because bit 11 is set
+                fprintf(pOutfile, "0x");
+                fprintf(pOutfile, "%04X\n", num + 2048 + allCodes[4].hexop);
             }
         }
         else{
-            //TODO: exit instead - exit(1)
-            printf("ERROR CODE 1: UNDEFINED LABEL\n");
+            //printf("ERROR CODE 1: UNDEFINED LABEL\n");
+            exit(1);
         }
     }
 
     else if(!strcmp(word1, "JSRR")){                      //JSRR
         if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-            //TODO: exit intead - exit(4)
-            printf("ERROR CODE 4: OTHER ERROR\n");
+            //printf("ERROR CODE 4: OTHER ERROR\n");
+            exit(4);
         }
         else{
             num = num + numToBits((word[1] - '0'), 0, 5, 0);
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num + allCodes[4].hexop); //want this to print in hex //adding 2048 because bit 11 is set
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num + allCodes[4].hexop);
         }
     }
     BAdd += 2;
@@ -656,8 +693,8 @@ void LDB(FILE* fp){
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);             //set bits 11-9 with DR
@@ -665,8 +702,8 @@ void LDB(FILE* fp){
 
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);              //set bits 8-6 with BR
@@ -681,14 +718,18 @@ void LDB(FILE* fp){
             num3 = (int)strtol(word + 1, NULL, 10);
         }
         if((num3 > 31)||(num3 < -32)){                              //if immediate is out of range (-32,31)
-            //TODO: exit instead - exit(3)
-            printf("ERROR CODE 3: INVALID CONSTANT\n");
+            //printf("ERROR CODE 3: INVALID CONSTANT\n");
+            exit(3);
         }
         else {
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[5].hexop); //want this to print in hex
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[5].hexop);
         }
+    }
+    else{
+        exit(4);
     }
     BAdd += 2;
 }
@@ -700,8 +741,8 @@ void LDW(FILE* fp){
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);             //set bits 11-9 with DR
@@ -709,8 +750,8 @@ void LDW(FILE* fp){
 
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);              //set bits 8-6 with BR
@@ -724,14 +765,18 @@ void LDW(FILE* fp){
             num3 = (int)strtol(word + 1, NULL, 10);
         }
         if((num3 > 31)||(num3 < -32)){                              //if immediate is out of range (-32,31)
-            //TODO: exit instead - exit(3)
-            printf("ERROR CODE 3: INVALID CONSTANT\n");
+            //printf("ERROR CODE 3: INVALID CONSTANT\n");
+            exit(3);
         }
         else {
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[6].hexop);   //want this to print in hex
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[6].hexop);
         }
+    }
+    else{
+        exit(4);
     }
     BAdd += 2;
 }
@@ -743,8 +788,8 @@ void LEA(FILE* fp){      //we need an error here for when the offset is too far 
     int offset = 0;                                     //this is to calculate offset of LEA
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);        //set bits 11-9 with DR
@@ -754,26 +799,32 @@ void LEA(FILE* fp){      //we need an error here for when the offset is too far 
         offset = getAddress(word);                                  //get address
         offset = (((offset - 2) - BAdd) / 2);                       //get offset from incremented PC
         if((offset < -256) || (offset > 255)){
-            //TODO: exit instead - exit(4)
-            printf("ERROR CODE 4: OTHER ERROR\n");
+            //printf("ERROR CODE 4: OTHER ERROR\n");
+            exit(4);
         }
         else {
             num2 = num2 + numToBits(offset, 0, 8, 0);               //set bits 8-0 with DR
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + allCodes[7].hexop);      //want this to print in hex
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + allCodes[7].hexop);
         }
     }
     else{
-        //TODO: exit instead - exit(1)
-        printf("ERROR CODE 1: UNDEFINED LABEL\n");
+        //printf("ERROR CODE 1: UNDEFINED LABEL\n");
+        if((word[0] == 'x') || (word[0] == '#')){
+            exit(4);
+        }
+        else{
+            exit(1);
+        }
     }
     BAdd += 2;
 }
 
 void RTI(FILE* fp){
-    //TODO: put this in the .obj file instead
     printf("0x8000\n");
+    fprintf(pOutfile, "ox8000\n");
     BAdd += 2;
 }
 
@@ -787,8 +838,8 @@ void SHF(FILE* fp, char word1[]){
 
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);        //set bits 11-9 DR
@@ -796,8 +847,8 @@ void SHF(FILE* fp, char word1[]){
 
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);        //set bits 8-6 SR
@@ -805,18 +856,19 @@ void SHF(FILE* fp, char word1[]){
 
     fscanf(fp, "%s", word);
     if(word[0] != '#') {
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     } else{
         num3 = (int)strtol(word + 1, NULL, 10);
         if((num3 > 15) || (num3 < 0)){                      //this can't be negative
-            //TODO: exit instead - exit(3)
-            printf("ERROR CODE 3: INVALID CONSTANT\n");
+            //printf("ERROR CODE 3: INVALID CONSTANT\n");
+            exit(3);
         }
         else {
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[9].hexop); //want this to print in hex
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[9].hexop);
         }
     }
     BAdd += 2;
@@ -828,8 +880,8 @@ void STB(FILE* fp){
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);             //set bits 11-9 with DR
@@ -837,8 +889,8 @@ void STB(FILE* fp){
 
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);              //set bits 8-6 with BR
@@ -853,18 +905,19 @@ void STB(FILE* fp){
             num3 = (int)strtol(word + 1, NULL, 10);
         }
         if((num3 > 31)||(num3 < -32)){                              //if immediate is out of range (-32,31)
-            //TODO: exit instead - exit(3)
-            printf("ERROR CODE 3: INVALID CONSTANT\n");
+            //printf("ERROR CODE 3: INVALID CONSTANT\n");
+            exit(3);
         }
         else {
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[10].hexop);   //want this to print in hex
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[10].hexop);
         }
     }
     else{
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     BAdd += 2;
 }
@@ -875,8 +928,8 @@ void STW(FILE* fp){
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);             //set bits 11-9 with DR
@@ -884,8 +937,8 @@ void STW(FILE* fp){
 
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);              //set bits 8-6 with BR
@@ -900,18 +953,19 @@ void STW(FILE* fp){
             num3 = (int)strtol(word + 1, NULL, 10);
         }
         if((num3 > 31)||(num3 < -32)){                              //if immediate is out of range (-32,31)
-            //TODO: exit instead - exit(3)
-            printf("ERROR CODE 3: INVALID CONSTANT\n");
+            //printf("ERROR CODE 3: INVALID CONSTANT\n");
+            exit(3);
         }
         else {
-            //TODO: put this in the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[11].hexop);   //want this to print in hex
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[11].hexop);
         }
     }
     else{
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     BAdd += 2;
 }
@@ -921,17 +975,17 @@ void TRAP(FILE* fp, char word1[]){
     if(!strcmp(word1, "TRAP")){
         fscanf(fp, "%s", word);                     //get the next word
         if(!strcmp(word, "x25")){
-            //TODO: put this into the .obj file instead
             printf("0xF025\n");
+            fprintf(pOutfile, "0xF025\n");
         }
         else{
-            //TODO: exit instead - exit(4)
-            printf("ERROR CODE 4: OTHER ERROR\n");
+            //printf("ERROR CODE 4: OTHER ERROR\n");
+            exit(4);
         }
     }
     else if(!strcmp(word1, "HALT")){
-        //TODO: put this into the .obj file instead
         printf("0xF025\n");
+        fprintf(pOutfile, "0xF025\n");
     }
     BAdd += 2;
 }
@@ -943,8 +997,8 @@ void XOR(FILE* fp, char word1[]){
     int num3 = 0;                                       //this is the decimal rep of binary of SR2 or imm5
     fscanf(fp, "%s", word);
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
     }
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);                  //set bits 11-9 with DR
@@ -952,8 +1006,8 @@ void XOR(FILE* fp, char word1[]){
     if(!strcmp(word1, "XOR")) {
         fscanf(fp, "%s", word);
         if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-            //TODO: exit instead - exit(4)
-            printf("ERROR CODE 4: OTHER ERROR\n");
+            //printf("ERROR CODE 4: OTHER ERROR\n");
+            exit(4);
         }
         else{
             num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);               //set bits 8-6 with DR
@@ -966,29 +1020,32 @@ void XOR(FILE* fp, char word1[]){
                 num3 = (int) strtol(word + 1, NULL, 10);
             }
             if((num3 > 15)||(num3 < -16)){                                   //if immediate is out of range (-16,15)
-                //TODO: exit instead - exit(3)
-                printf("ERROR CODE 3: INVALID CONSTANT\n");
+                //printf("ERROR CODE 3: INVALID CONSTANT\n");
+                exit(3);
             } else {
                 if (num3 < 0) {num3 += 32;}        //if negative immediate
                 num3 += 32;                          //this is bit 5
-                //TODO: put this into the .obj file instead
                 printf("0x");
-                printf("%04X\n", num1 + num2 + num3 + allCodes[0].hexop);    //want this to print in hex//bit 5 is 1
+                printf("%04X\n", num1 + num2 + num3 + allCodes[13].hexop);    //want this to print in hex//bit 5 is 1
+                fprintf(pOutfile, "0x");
+                fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[13].hexop);
             }
         } else if ((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-            //TODO: exit instead - exit(4)
-            printf("ERROR CODE 4: OTHER ERROR\n");
+            //printf("ERROR CODE 4: OTHER ERROR\n");
+            exit(4);
         } else if (word[0] == 'R') {                                        //if second source operand
             num3 = num3 + numToBits((word[1] - '0'), 0, 2, 0);              //set bits 2-0 with SR2
-            //TODO: put this into the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[13].hexop);      //want this to print in hex
+            fprintf(pOutfile, "0x");
+            fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[13].hexop);
         }
     }
     else{
-        //TODO: put this into the .obj file instead
         printf("0x");
         printf("%04X\n", num1 + 63 + allCodes[13].hexop);            //want this to print in hex
+        fprintf(pOutfile, "0x");
+        fprintf(pOutfile, "%04X\n", num1 + 63 + allCodes[13].hexop);
     }
     BAdd += 2;
 }
