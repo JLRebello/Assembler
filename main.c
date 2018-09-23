@@ -1,4 +1,10 @@
-//TODO: put the right header comments
+/*
+    Name 1: Julia Rebello
+    Name 2: Clara Johnson
+    UTEID 1: jlr3755
+    UTEID 2: caj2773
+*/
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -49,7 +55,7 @@ void STW(FILE* fp);
 void TRAP(FILE* fp, char str[]);
 void XOR(FILE* fp, char str[]);
 
-//TODO: look at the "helpful functions" document on Patt's website when we change all the stuff to do the command line things and everything else
+
 int main () {
     int STCtr = 0;                  //SYMBOL TABLE COUNTER
     BAdd = 0;                       //address counter starting with add specified by .ORIG
@@ -152,6 +158,7 @@ int main () {
             } else {
                 //TODO: exit instead - exit(4)
                 printf("ERROR CODE 4: OTHER ERROR\n");              //if hex is not in correct format
+                //exit(4);
             }
             if((BAdd%2)==1){
                 //TODO: exit instead - exit(3)
@@ -174,9 +181,8 @@ int main () {
                 BAdd += 2;                                      //increment address counter
             }
                 //below, we check if the word1 is alphanumeric, doesnt begin with x, and isn't IN, OUT, GETC, or PUTS
-            else if ((isAlphaNum(word1)) && (word1[0] != 'x') && (word1[0] != 'X') && (word1[0] != 'X') && (strcmp(word1, "IN")) && (strcmp(word1, "OUT")) &&
-                     (strcmp(word1, "GETC")) && (strcmp(word1, "PUTS")) && (!isValid(word1))) {
-                //TODO: check if the label only starts with an alphabet character
+            else if ((isAlphaNum(word1)) && ((word1[0] < 48) || (word1[0] > 57)) && (word1[0] != 'x') && (word1[0] != 'X') && (word1[0] != 'X') && (strcmp(word1, "IN")) && (strcmp(word1, "OUT")) &&
+                     (strcmp(word1, "GETC")) && (strcmp(word1, "PUTS")) && (!isValid(word1)) && (!(isLabel(word1)))) {
                 //if word1 is invalid opcode and meets standards for label, but word2 is valid opcode, word1 is label
                 symbolTable[STCtr].address = BAdd;
                 strncpy(symbolTable[STCtr].label, word1, 21);
@@ -219,11 +225,10 @@ int main () {
                     BAdd = (int) strtol(word1+1, NULL, 16); //grab address where the program begins. word+1 to avoid x
                     if((BAdd%2)==1){
                         //TODO: exit instead - exit(3)
-                        //TODO: also I think we already caught this error when building the symbol table, so we might not need this
                         printf("ERROR CODE 3: INVALID CONSTANT\n");          //program cant start at odd address
                     }
                     else {
-                        //TODO: change this so it goes into the .obj file from the command line instead - i think the command line thing automatically does that?
+                        //TODO: change this so it goes into the .obj file from the command line instead
                         printf("0x");
                         printf("%04X\n", BAdd);                             //want this to print in hex
                     }
@@ -309,8 +314,6 @@ int main () {
             }
             moveOn(fptr);
         }
-        //TODO: do all these if/else ifs check if the first word it grabbed is a label so that then it can still assemble the instruction after it?
-        //TODO: Yes, if the word is not valid, it comes here, and gets checked for labelness. If its a label, it goes back up to the top of the while loop, and gets next word.
         else if((!isLabel(word1))&&(strcmp(word1,".END"))){
             //TODO: exit instead - exit(2)
             printf("ERROR CODE 2: INVALID OPCODE\n");
@@ -425,7 +428,7 @@ int powpow(int a, int b){
     return res;
 }
 
-//TODO: we'll want to at least comment this out once we start putting everything in the .obj file instead
+//TODO: we'll want to at least comment this out once we start putting everything in the .obj file instead*******************
 void printSymbolTable(void){
     for(int i = 0; symbolTable[i].address != 0 ; i++) {  //to reach entire symbol table
         printf("%s ", symbolTable[i].label);
@@ -437,7 +440,6 @@ void printSymbolTable(void){
 //***********************************************************************************************************************************
 //************************************************ OPCODE FUNCTIONS *****************************************************************
 //***********************************************************************************************************************************
-//TODO: double check the acceptable ranges for the offsets and immediate operands
 void ADD(FILE* fp){
     char word[5] = {0, 0, 0, 0, 0};                     //this is to read file into
     int num1 = 0;                                       //this is the decimal rep of binary of DR
@@ -472,8 +474,8 @@ void ADD(FILE* fp){
             printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
-            if (num3 < 0) {num3 += 32;}        //if negative immediate //TODO: what is this doing? converting it to unsigned to add to int that will become hex
-            num3 += 32;                          //this is bit 5 //TODO: what is this doing? This is adding 32 because bit 5 is set is add is using an imm operand
+            if (num3 < 0) {num3 += 32;}        //if negative immediate
+            num3 += 32;                          //this is bit 5
             //TODO: output this to the .obj file instead
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[0].hexop); //want this to print in hex//bit 5 is 1
@@ -522,7 +524,6 @@ void AND(FILE* fp){
         else{
             num3 = (int)strtol(word + 1, NULL, 10);
         }
-        //TODO: the range of an immediate is -16 to 15
         if((num3 > 15)||(num3 < -16)){                              //if immediate is out of range (-16,15)
             //TODO: exit instead - exit(3)
             printf("ERROR CODE 3: INVALID CONSTANT\n");
@@ -566,10 +567,16 @@ void BR(FILE* fp, char word1[]){
     if(isLabel(word)){                                          //if label
         offset = getAddress(word);                              //get address
         offset = (((offset - 2) - BAdd) / 2);                   //get offset from incremented PC
-        num2 = num2 + numToBits(offset, 0, 8, 0);               //set bits 8-0 with DR
-        //TODO: put this in the .obj file instead
-        printf("0x");
-        printf("%04X\n", num1 + num2 + allCodes[2].hexop);      //want this to print in hex
+        if((offset < -256) || (offset > 255)){
+            //TODO: exit instead - exit(4)
+            printf("ERROR CODE 4: OTHER ERROR\n");
+        }
+        else {
+            num2 = num2 + numToBits(offset, 0, 8, 0);//set bits 8-0 with DR
+            //TODO: put this in the .obj file instead
+            printf("0x");
+            printf("%04X\n", num1 + num2 + allCodes[2].hexop);          //want this to print in hex
+        }
     }
     else {
         //TODO: exit instead - exit(1)
@@ -610,32 +617,17 @@ void JSR(FILE* fp, char word1[]){
         if(isLabel(word)){                                      //if label
             offset = getAddress(word);                          //get address
             offset = (((offset - 2) - BAdd) / 2);               //get offset from incremented PC
-            num = num + numToBits(offset, 0, 10, 0);            //set bits 10-0
-            //TODO: put this in the .obj file instead
-            printf("0x");
-            printf("%04X\n", 2048 + num + allCodes[4].hexop); //want this to print in hex //adding 2048 because bit 11 is set
-        }
- /*       else if ((wordr[0] == 'x') || (wordr[0] == '#')) {
-            if (wordr[0] == 'x') {
-                num = (int) strtol(wordr + 1, NULL, 16); //grab address where the program begins. word+1 b/c you want to avoid x
-                if(num > 1023){
-                printf("ERROR CODE 3: INVALID CONSTANT");
-                }
-                else{
-                printf("0x");
-                printf("%04X\n", 2048 + num + allCodes[4].hexop); //want this to print in hex
-                }
-            } else {
-                num = (int) strtol(wordr + 1, NULL, 10);
-                if(num > 1023){
-                printf("ERROR CODE 3: INVALID CONSTANT");
-                }
-                else{
-                printf("0x");
-                printf("%04X\n", 2048 + num + allCodes[4].hexop); //want this to print in hex
-                }
+            if((offset < -1024) || (offset > 1023)){
+                //TODO: exit instead - exit(4)
+                printf("ERROR CODE 4: OTHER ERROR\n");
             }
-        }*/                                                     // can JSR take a direct offset??? has to be a label right??
+            else {
+                num = num + numToBits(offset, 0, 10, 0);            //set bits 10-0 with DR
+                //TODO: put this in the .obj file instead
+                printf("0x");
+                printf("%04X\n", num + 2048 + allCodes[4].hexop);   //want this to print in hex//adding 2048 because bit 11 is set
+            }
+        }
         else{
             //TODO: exit instead - exit(1)
             printf("ERROR CODE 1: UNDEFINED LABEL\n");
@@ -681,13 +673,14 @@ void LDB(FILE* fp){
     }
 
     fscanf(fp, "%s", word);                                             //get the offset
-    //TODO: check if we need to check for a hex number too
-    if(word[0] != '#') {                                                //can the offset be in hex???
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
-    } else{
-        num3 = (int)strtol(word + 1, NULL, 10);
-        if((num3 > 31)||(num3 < -32)){                                  //if offset is out of range for 6 bits (-32,31)
+    if((word[0] == 'x') || (word[0] == '#')){                           //if immediate operand
+        if(word[0] == 'x') {
+            num3 = (int)strtol(word + 1, NULL, 16);
+        }
+        else{
+            num3 = (int)strtol(word + 1, NULL, 10);
+        }
+        if((num3 > 31)||(num3 < -32)){                              //if immediate is out of range (-32,31)
             //TODO: exit instead - exit(3)
             printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
@@ -722,15 +715,15 @@ void LDW(FILE* fp){
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);              //set bits 8-6 with BR
     }
-
     fscanf(fp, "%s", word);                                             //get the offset
-    //TODO: check if we need to check for a hex number too
-    if(word[0] != '#') {                                                //can the offset be in hex???
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
-    } else{
-        num3 = (int)strtol(word + 1, NULL, 10);
-        if((num3 > 31)||(num3 < -32)){                                  //if offset is out of range for 6 bits (-32,31)
+    if((word[0] == 'x') || (word[0] == '#')){                           //if immediate operand
+        if(word[0] == 'x') {
+            num3 = (int)strtol(word + 1, NULL, 16);
+        }
+        else{
+            num3 = (int)strtol(word + 1, NULL, 10);
+        }
+        if((num3 > 31)||(num3 < -32)){                              //if immediate is out of range (-32,31)
             //TODO: exit instead - exit(3)
             printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
@@ -756,38 +749,21 @@ void LEA(FILE* fp){      //we need an error here for when the offset is too far 
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);        //set bits 11-9 with DR
     }
-    //TODO: check if LEA can only take a label and not a direct offset
     fscanf(fp, "%s", word);                                         //get the label or direct offset
     if(isLabel(word)){                                              //if label
         offset = getAddress(word);                                  //get address
         offset = (((offset - 2) - BAdd) / 2);                       //get offset from incremented PC
-        num2 = num2 + numToBits(offset, 0, 8, 0);                   //set bits 8-0 with DR
-        //TODO: check if the offset is too large
-        //TODO: put this in the .obj file instead
-        printf("0x");
-        printf("%04X\n", num1 + num2 + allCodes[7].hexop);          //want this to print in hex
+        if((offset < -256) || (offset > 255)){
+            //TODO: exit instead - exit(4)
+            printf("ERROR CODE 4: OTHER ERROR\n");
+        }
+        else {
+            num2 = num2 + numToBits(offset, 0, 8, 0);               //set bits 8-0 with DR
+            //TODO: put this in the .obj file instead
+            printf("0x");
+            printf("%04X\n", num1 + num2 + allCodes[7].hexop);      //want this to print in hex
+        }
     }
-        /*       else if ((wordr[0] == 'x') || (wordr[0] == '#')) {
-                   if (wordr[0] == 'x') {
-                       num = (int) strtol(wordr + 1, NULL, 16); //grab address where the program begins. word+1 b/c you want to avoid x
-                       if(num > 511){
-                       printf("ERROR CODE 3: INVALID CONSTANT");
-                       }
-                       else{
-                       printf("0x");
-                       printf("%04X\n", 2048 + num + allCodes[4].hexop); //want this to print in hex
-                       }
-                   } else {
-                       num = (int) strtol(wordr + 1, NULL, 10);
-                       if(num > 511){
-                       printf("ERROR CODE 3: INVALID CONSTANT");
-                       }
-                       else{
-                       printf("0x");
-                       printf("%04X\n", 2048 + num + allCodes[4].hexop); //want this to print in hex
-                       }
-                   }
-               }*/                                                     // can LEA take a direct offset??? has to be a label right??
     else{
         //TODO: exit instead - exit(1)
         printf("ERROR CODE 1: UNDEFINED LABEL\n");
@@ -810,7 +786,6 @@ void SHF(FILE* fp, char word1[]){
     if(!strcmp(word1, "RSHFA")){num1 = 48;}
 
     fscanf(fp, "%s", word);
-    //TODO: also should the 0's and 8's and stuff in all these be characters instead since wordr is a character array and not an int array?
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //TODO: exit instead - exit(4)
         printf("ERROR CODE 4: OTHER ERROR\n");
@@ -834,8 +809,7 @@ void SHF(FILE* fp, char word1[]){
         printf("ERROR CODE 4: OTHER ERROR\n");
     } else{
         num3 = (int)strtol(word + 1, NULL, 10);
-        //TODO: make sure this checks against the correct number
-        if(num3 > 15){
+        if((num3 > 15) || (num3 < 0)){                      //this can't be negative
             //TODO: exit instead - exit(3)
             printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
@@ -871,21 +845,26 @@ void STB(FILE* fp){
     }
 
     fscanf(fp, "%s", word);                                             //get the offset
-    //TODO: check if the offset can also be in hex
-    if(word[0] != '#') {                                                //can the offset be in hex???
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
-    } else{
-        num3 = (int)strtol(word + 1, NULL, 10);
-        if((num3 > 31)||(num3 < -32)){                                  //if offset is out of range for 6 bits (-32,31)
+    if((word[0] == 'x') || (word[0] == '#')){                           //if immediate operand
+        if(word[0] == 'x') {
+            num3 = (int)strtol(word + 1, NULL, 16);
+        }
+        else{
+            num3 = (int)strtol(word + 1, NULL, 10);
+        }
+        if((num3 > 31)||(num3 < -32)){                              //if immediate is out of range (-32,31)
             //TODO: exit instead - exit(3)
             printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
-            //TODO: put this into the .obj file instead
+            //TODO: put this in the .obj file instead
             printf("0x");
-            printf("%04X\n", num1 + num2 + num3 + allCodes[10].hexop); //want this to print in hex
+            printf("%04X\n", num1 + num2 + num3 + allCodes[10].hexop);   //want this to print in hex
         }
+    }
+    else{
+        //TODO: exit instead - exit(4)
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     BAdd += 2;
 }
@@ -913,21 +892,26 @@ void STW(FILE* fp){
     }
 
     fscanf(fp, "%s", word);                                             //get the offset
-    //TODO: check if the offset can also be given in hex
-    if(word[0] != '#') {                                                //can the offset be in hex???
-        //TODO: exit instead - exit(4)
-        printf("ERROR CODE 4: OTHER ERROR\n");
-    } else{
-        num3 = (int)strtol(word + 1, NULL, 10);
-        if((num3 > 31)||(num3 < -32)){                                  //if offset is out of range for 6 bits (-32,31)
+    if((word[0] == 'x') || (word[0] == '#')){                           //if immediate operand
+        if(word[0] == 'x') {
+            num3 = (int)strtol(word + 1, NULL, 16);
+        }
+        else{
+            num3 = (int)strtol(word + 1, NULL, 10);
+        }
+        if((num3 > 31)||(num3 < -32)){                              //if immediate is out of range (-32,31)
             //TODO: exit instead - exit(3)
             printf("ERROR CODE 3: INVALID CONSTANT\n");
         }
         else {
-            //TODO: put this into the .obj file instead
+            //TODO: put this in the .obj file instead
             printf("0x");
-            printf("%04X\n", num1 + num2 + num3 + allCodes[11].hexop); //want this to print in hex
+            printf("%04X\n", num1 + num2 + num3 + allCodes[11].hexop);   //want this to print in hex
         }
+    }
+    else{
+        //TODO: exit instead - exit(4)
+        printf("ERROR CODE 4: OTHER ERROR\n");
     }
     BAdd += 2;
 }
@@ -940,7 +924,6 @@ void TRAP(FILE* fp, char word1[]){
             //TODO: put this into the .obj file instead
             printf("0xF025\n");
         }
-        //TODO: make sure there aren't any other TRAP codes we should be watching for--I checked and its only x25-but lets make sure
         else{
             //TODO: exit instead - exit(4)
             printf("ERROR CODE 4: OTHER ERROR\n");
