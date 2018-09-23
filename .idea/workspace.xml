@@ -12,13 +12,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="06093769-f213-43b0-9b21-86f439c1374e" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Assembler" afterPath="$PROJECT_DIR$/cmake-build-debug/Assembler" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/main.c.o" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/main.c.o" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/errorTests.txt" afterPath="$PROJECT_DIR$/cmake-build-debug/errorTests.txt" />
-      <change beforePath="$PROJECT_DIR$/main.c" afterPath="$PROJECT_DIR$/main.c" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -192,7 +187,7 @@
       <workItem from="1537720192096" duration="21000" />
       <workItem from="1537720476434" duration="12362000" />
       <workItem from="1537733287723" duration="484000" />
-      <workItem from="1537733839878" duration="82000" />
+      <workItem from="1537733839878" duration="254000" />
     </task>
     <task id="LOCAL-00001" summary="sep21">
       <created>1537547970718</created>
@@ -229,16 +224,23 @@
       <option name="project" value="LOCAL" />
       <updated>1537725998701</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="sep23 3:18pm">
+      <created>1537733945598</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1537733945598</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="91436000" />
+    <option name="totallyTimeSpent" value="91608000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="35" y="23" width="1324" height="646" extended-state="0" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3542296" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28625378" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23344947" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -272,7 +274,8 @@
     <MESSAGE value="sep21c" />
     <MESSAGE value="sep21d" />
     <MESSAGE value="sep23 fixed TO DO's" />
-    <option name="LAST_COMMIT_MESSAGE" value="sep23 fixed TO DO's" />
+    <MESSAGE value="sep23 3:18pm" />
+    <option name="LAST_COMMIT_MESSAGE" value="sep23 3:18pm" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
