@@ -48,10 +48,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/JuliaRebello/CLionProjects/Assembler
+CMAKE_SOURCE_DIR = /Users/JuliaRebello/CLionProjects/assemble
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug/CMakeFiles /Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug/CMakeFiles /Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -123,32 +123,32 @@ Assembler/fast:
 	$(MAKE) -f CMakeFiles/Assembler.dir/build.make CMakeFiles/Assembler.dir/build
 .PHONY : Assembler/fast
 
-main.o: main.c.o
+assemble.o: assemble.c.o
 
-.PHONY : main.o
+.PHONY : assemble.o
 
 # target to build an object file
-main.c.o:
-	$(MAKE) -f CMakeFiles/Assembler.dir/build.make CMakeFiles/Assembler.dir/main.c.o
-.PHONY : main.c.o
+assemble.c.o:
+	$(MAKE) -f CMakeFiles/Assembler.dir/build.make CMakeFiles/Assembler.dir/assemble.c.o
+.PHONY : assemble.c.o
 
-main.i: main.c.i
+assemble.i: assemble.c.i
 
-.PHONY : main.i
+.PHONY : assemble.i
 
 # target to preprocess a source file
-main.c.i:
-	$(MAKE) -f CMakeFiles/Assembler.dir/build.make CMakeFiles/Assembler.dir/main.c.i
-.PHONY : main.c.i
+assemble.c.i:
+	$(MAKE) -f CMakeFiles/Assembler.dir/build.make CMakeFiles/Assembler.dir/assemble.c.i
+.PHONY : assemble.c.i
 
-main.s: main.c.s
+assemble.s: assemble.c.s
 
-.PHONY : main.s
+.PHONY : assemble.s
 
 # target to generate assembly for a file
-main.c.s:
-	$(MAKE) -f CMakeFiles/Assembler.dir/build.make CMakeFiles/Assembler.dir/main.c.s
-.PHONY : main.c.s
+assemble.c.s:
+	$(MAKE) -f CMakeFiles/Assembler.dir/build.make CMakeFiles/Assembler.dir/assemble.c.s
+.PHONY : assemble.c.s
 
 # Help Target
 help:
@@ -159,9 +159,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... Assembler"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... assemble.o"
+	@echo "... assemble.i"
+	@echo "... assemble.s"
 .PHONY : help
 
 

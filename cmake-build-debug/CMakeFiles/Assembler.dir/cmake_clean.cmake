@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Assembler.dir/main.c.o"
+  "CMakeFiles/Assembler.dir/assemble.c.o"
   "Assembler.pdb"
   "Assembler"
 )

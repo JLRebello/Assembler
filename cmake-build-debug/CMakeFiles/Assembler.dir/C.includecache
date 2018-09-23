@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/Users/JuliaRebello/CLionProjects/Assembler/main.c
+/Users/JuliaRebello/CLionProjects/assemble/assemble.c
 stdio.h
 -
 stdbool.h

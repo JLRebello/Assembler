@@ -43,10 +43,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/JuliaRebello/CLionProjects/Assembler
+CMAKE_SOURCE_DIR = /Users/JuliaRebello/CLionProjects/assemble
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/Assembler.dir/depend.make
@@ -57,41 +57,41 @@ include CMakeFiles/Assembler.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Assembler.dir/flags.make
 
-CMakeFiles/Assembler.dir/main.c.o: CMakeFiles/Assembler.dir/flags.make
-CMakeFiles/Assembler.dir/main.c.o: ../main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Assembler.dir/main.c.o"
-	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Assembler.dir/main.c.o   -c /Users/JuliaRebello/CLionProjects/Assembler/main.c
+CMakeFiles/Assembler.dir/assemble.c.o: CMakeFiles/Assembler.dir/flags.make
+CMakeFiles/Assembler.dir/assemble.c.o: ../assemble.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Assembler.dir/assemble.c.o"
+	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Assembler.dir/assemble.c.o   -c /Users/JuliaRebello/CLionProjects/assemble/assemble.c
 
-CMakeFiles/Assembler.dir/main.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Assembler.dir/main.c.i"
-	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/JuliaRebello/CLionProjects/Assembler/main.c > CMakeFiles/Assembler.dir/main.c.i
+CMakeFiles/Assembler.dir/assemble.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Assembler.dir/assemble.c.i"
+	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/JuliaRebello/CLionProjects/assemble/assemble.c > CMakeFiles/Assembler.dir/assemble.c.i
 
-CMakeFiles/Assembler.dir/main.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Assembler.dir/main.c.s"
-	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/JuliaRebello/CLionProjects/Assembler/main.c -o CMakeFiles/Assembler.dir/main.c.s
+CMakeFiles/Assembler.dir/assemble.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Assembler.dir/assemble.c.s"
+	/Library/Developer/CommandLineTools/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/JuliaRebello/CLionProjects/assemble/assemble.c -o CMakeFiles/Assembler.dir/assemble.c.s
 
-CMakeFiles/Assembler.dir/main.c.o.requires:
+CMakeFiles/Assembler.dir/assemble.c.o.requires:
 
-.PHONY : CMakeFiles/Assembler.dir/main.c.o.requires
+.PHONY : CMakeFiles/Assembler.dir/assemble.c.o.requires
 
-CMakeFiles/Assembler.dir/main.c.o.provides: CMakeFiles/Assembler.dir/main.c.o.requires
-	$(MAKE) -f CMakeFiles/Assembler.dir/build.make CMakeFiles/Assembler.dir/main.c.o.provides.build
-.PHONY : CMakeFiles/Assembler.dir/main.c.o.provides
+CMakeFiles/Assembler.dir/assemble.c.o.provides: CMakeFiles/Assembler.dir/assemble.c.o.requires
+	$(MAKE) -f CMakeFiles/Assembler.dir/build.make CMakeFiles/Assembler.dir/assemble.c.o.provides.build
+.PHONY : CMakeFiles/Assembler.dir/assemble.c.o.provides
 
-CMakeFiles/Assembler.dir/main.c.o.provides.build: CMakeFiles/Assembler.dir/main.c.o
+CMakeFiles/Assembler.dir/assemble.c.o.provides.build: CMakeFiles/Assembler.dir/assemble.c.o
 
 
 # Object files for target Assembler
 Assembler_OBJECTS = \
-"CMakeFiles/Assembler.dir/main.c.o"
+"CMakeFiles/Assembler.dir/assemble.c.o"
 
 # External object files for target Assembler
 Assembler_EXTERNAL_OBJECTS =
 
-Assembler: CMakeFiles/Assembler.dir/main.c.o
+Assembler: CMakeFiles/Assembler.dir/assemble.c.o
 Assembler: CMakeFiles/Assembler.dir/build.make
 Assembler: CMakeFiles/Assembler.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable Assembler"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable Assembler"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Assembler.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -99,7 +99,7 @@ CMakeFiles/Assembler.dir/build: Assembler
 
 .PHONY : CMakeFiles/Assembler.dir/build
 
-CMakeFiles/Assembler.dir/requires: CMakeFiles/Assembler.dir/main.c.o.requires
+CMakeFiles/Assembler.dir/requires: CMakeFiles/Assembler.dir/assemble.c.o.requires
 
 .PHONY : CMakeFiles/Assembler.dir/requires
 
@@ -108,6 +108,6 @@ CMakeFiles/Assembler.dir/clean:
 .PHONY : CMakeFiles/Assembler.dir/clean
 
 CMakeFiles/Assembler.dir/depend:
-	cd /Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/JuliaRebello/CLionProjects/Assembler /Users/JuliaRebello/CLionProjects/Assembler /Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug /Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug /Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug/CMakeFiles/Assembler.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/JuliaRebello/CLionProjects/assemble /Users/JuliaRebello/CLionProjects/assemble /Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug /Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug /Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug/CMakeFiles/Assembler.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/Assembler.dir/depend
 

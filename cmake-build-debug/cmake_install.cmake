@@ -1,4 +1,4 @@
-# Install script for directory: /Users/JuliaRebello/CLionProjects/Assembler
+# Install script for directory: /Users/JuliaRebello/CLionProjects/assemble
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -35,5 +35,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/JuliaRebello/CLionProjects/Assembler/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/JuliaRebello/CLionProjects/assemble/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
