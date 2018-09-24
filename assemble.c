@@ -38,7 +38,7 @@ bool isValid(char str[]);
 FILE* moveOn(FILE* fp);         //moves to next line of document
 int numToBits(int num, int res, int startBit, int endBit);      //amazing
 int powpow(int a, int b);       //calculates exponential
-void printSymbolTable(void);    //prints symbol table //TODO: we should probably remove this one before we turn it in since it won't be necessary anymore
+void printSymbolTable(void);    //prints symbol table// TODO: we should probably remove this one before we turn it in since it won't be necessary anymore
 
 //OPCODE FUNCTIONS
 void ADD(FILE* fp);
@@ -161,12 +161,18 @@ int main (int argc, char* argv[]) {
 
     while (strcmp(word1, ".END")) {
         fscanf(fptr, "%s", word1);
+        for(int i = 0; i < strlen(word1); i++){
+            word1[i] = toupper(word1[i]);
+        }
         if ((word1[0] == ';')||(!strcmp(word1,"NOP"))) {
             fptr = moveOn(fptr);                                //move on to the next line of the document
         } else if (!strcmp(word1, ".ORIG")) {                   //SURPRISE! strcmp returns 0 if they're the same!
             fscanf(fptr, "%s", word1);
-            if ((word1[0] == 'x') || (word1[0] == '#')) {
-                if (word1[0] == 'x') {
+            for(int i = 0; i < strlen(word1); i++){
+                word1[i] = toupper(word1[i]);
+            }
+            if ((word1[0] == 'X') || (word1[0] == '#')) {
+                if (word1[0] == 'X') {
                     BAdd = (int) strtol(word1 + 1, NULL, 16);       //grab address of prog word+1 b/c you want to avoid x
                 } else {
                     BAdd = (int) strtol(word1 + 1, NULL, 10);
@@ -179,12 +185,18 @@ int main (int argc, char* argv[]) {
                 //printf("ERROR CODE 3: INVALID CONSTANT\n");          //prog cant start at odd address
                 exit(3);
             }
+            if((BAdd > 0xFFFF) || (BAdd < 0)){
+                exit(3);
+            }
         } else if (!strcmp(word1, ".FILL")) {
             fptr = moveOn(fptr);                                //move on to the next line of the document
             BAdd += 2;                                          //increment address counter
         } else if (isValid(word1)) {                            //if word1 is VALID
             if((strcmp(word1,"RET")) && (strcmp(word1,"RTI")) && (strcmp(word1,"HALT"))){
                 fscanf(fptr, "%s", word1);
+                for(int i = 0; i < strlen(word1); i++){
+                    word1[i] = toupper(word1[i]);
+                }
                 if(isValid(word1)){
                     //printf("ERROR CODE 4: OTHER ERROR\n");
                     //fptr = moveOn(fptr);//move on to the next line of the document
@@ -201,7 +213,11 @@ int main (int argc, char* argv[]) {
                 BAdd += 2;                                          //increment address counter
             }
         } else if ((!isValid(word1)) && (strcmp(word1, ".END"))) {         //if word1 is NOT VALID and NOT .END
-            fscanf(fptr, "%s", word2);                          //if its not, check if word2 is a valid opcode
+            fscanf(fptr, "%s", word2);
+            for(int i = 0; i < strlen(word2); i++){
+                word2[i] = toupper(word2[i]);
+            }
+            //if its not, check if word2 is a valid opcode
             //if word1 and word2 are both invalid opcodes, ERROR, but word2 can be .FILL
             if ((!isValid(word2)) && (strcmp(word2, ".FILL"))) {
                 //printf("ERROR CODE 2: INVALID OPCODE\n");
@@ -210,7 +226,7 @@ int main (int argc, char* argv[]) {
                 exit(2);
             }
                 //below, we check if the word1 is alphanumeric, doesnt begin with x, and isn't IN, OUT, GETC, or PUTS
-            else if ((isAlphaNum(word1)) && ((word1[0] < 48) || (word1[0] > 57)) && (word1[0] != 'x') && (word1[0] != 'X') && (word1[0] != 'X') && (strcmp(word1, "IN")) && (strcmp(word1, "OUT")) && (strcmp(word1, "GETC")) && (strcmp(word1, "PUTS")) && (!isValid(word1)) && (!(isLabel(word1)))) {
+            else if ((isAlphaNum(word1)) && ((word1[0] < 48) || (word1[0] > 57)) && (word1[0] != 'X') && (strcmp(word1, "IN")) && (strcmp(word1, "OUT")) && (strcmp(word1, "GETC")) && (strcmp(word1, "PUTS")) && (!isValid(word1)) && (!(isLabel(word1)))) {
                 //if word1 is invalid opcode and meets standards for label, but word2 is valid opcode, word1 is label
                 symbolTable[STCtr].address = BAdd;
                 strncpy(symbolTable[STCtr].label, word1, 21);
@@ -243,12 +259,18 @@ int main (int argc, char* argv[]) {
 
     while (strcmp(word1, ".END")) {
         fscanf(fptr, "%s", word1);
+        for(int i = 0; i < strlen(word1); i++){
+            word1[i] = toupper(word1[i]);
+        }
         if (word1[0]== ';') {
             fptr = moveOn(fptr);                //move on to the next line of the document
         } else if (!strcmp(word1, ".ORIG")) {   //SURPRISE! strcmp returns 0 if they're the same!
             fscanf(fptr, "%s", word1);
-            if ((word1[0]== 'x') || (word1[0]== '#')) {
-                if (word1[0] == 'x') {
+            for(int i = 0; i < strlen(word1); i++){
+                word1[i] = toupper(word1[i]);
+            }
+            if ((word1[0]== 'X') || (word1[0]== '#')) {
+                if (word1[0] == 'X') {
                     BAdd = (int) strtol(word1+1, NULL, 16); //grab address where the program begins. word+1 to avoid x
                     if((BAdd%2)==1){
                         //printf("ERROR CODE 3: INVALID CONSTANT\n");          //program cant start at odd address
@@ -280,8 +302,11 @@ int main (int argc, char* argv[]) {
             fptr = moveOn(fptr);                                //move on to the next line of the document
         } else if (!strcmp(word1, ".FILL")) {
             fscanf(fptr, "%s", word1);
-            if ((word1[0] == 'x') || (word1[0]== '#')) {
-                if (word1[0] == 'x') {
+            for(int i = 0; i < strlen(word1); i++){
+                word1[i] = toupper(word1[i]);
+            }
+            if ((word1[0] == 'X') || (word1[0]== '#')) {
+                if (word1[0] == 'X') {
                     BAdd = (int) strtol(word1 + 1, NULL, 16);   //grab the constant that .FILL places at that address
                     printf("0x");
                     printf("%04X\n", BAdd);                     //want this to print in hex
@@ -353,6 +378,7 @@ int main (int argc, char* argv[]) {
         }
     }
     fclose(fptr); //this goes at the end of program
+    exit(0);
     //TODO: I think we might have to add exit(0) here (at the end of the program) since it says we have to return an error code of 0 if everything assembled correctly
 }
 //***********************************************************************************************************************************
@@ -471,11 +497,14 @@ void printSymbolTable(void){
 //************************************************ OPCODE FUNCTIONS *****************************************************************
 //***********************************************************************************************************************************
 void ADD(FILE* fp){
-    char word[5] = {0, 0, 0, 0, 0};                     //this is to read file into
+    char word[12] = {0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0, 0, 0};           //this is to read file into
     int num1 = 0;                                       //this is the decimal rep of binary of DR
     int num2 = 0;                                       //this is the decimal rep of binary of SR1
     int num3 = 0;                                       //this is the decimal rep of binary of SR2 or imm5
     fscanf(fp, "%s", word);
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -483,7 +512,24 @@ void ADD(FILE* fp){
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);        //set bits 11-9 with DR
     }
-    fscanf(fp, "%s", word);
+
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -491,9 +537,25 @@ void ADD(FILE* fp){
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);          //set bits 8-6 with SR1
     }
-    fscanf(fp, "%s", word);
-    if((word[0] == 'x') || (word[0] == '#')){                       //if immediate operand
-        if(word[0] == 'x') {
+
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
+    if((word[0] == 'X') || (word[0] == '#')){                       //if immediate operand
+        if(word[0] == 'X') {
             num3 = (int)strtol(word + 1, NULL, 16);
         }
         else{
@@ -527,11 +589,14 @@ void ADD(FILE* fp){
 }
 
 void AND(FILE* fp){
-    char word[5] = {0, 0, 0, 0, 0};                     //this is to read file into
+    char word[12] = {0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0, 0, 0};           //this is to read file into
     int num1 = 0;                                       //this is the decimal rep of binary of DR
     int num2 = 0;                                       //this is the decimal rep of binary of SR1
     int num3 = 0;                                       //this is the decimal rep of binary of SR2 or imm5
     fscanf(fp, "%s", word);
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -539,7 +604,24 @@ void AND(FILE* fp){
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);        //set bits 11-9 with DR
     }
-    fscanf(fp, "%s", word);
+
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -547,21 +629,37 @@ void AND(FILE* fp){
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);          //set bits 8-6 with SR1
     }
-    fscanf(fp, "%s", word);
-    if((word[0] == 'x') || (word[0] == '#')){                       //if immediate operand
-        if(word[0] == 'x') {
+
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
+    if((word[0] == 'X') || (word[0] == '#')){                       //if immediate operand
+        if(word[0] == 'X') {
             num3 = (int)strtol(word + 1, NULL, 16);
         }
         else{
-            num3 = (int)strtol(word + 1, NULL, 10);
+            num3= (int)strtol(word+1, NULL, 10);
         }
-        if((num3 > 15)||(num3 < -16)){                              //if immediate is out of range (-16,15)
+        if((num3 > 15)||(num3 < -16)){                             //if immediate is out of range (-16,15)
             //printf("ERROR CODE 3: INVALID CONSTANT\n");
             exit(3);
         }
         else {
-            if (num3 < 0) {num3 += 32;}                 //if negative immediate
-            num3 += 32;                                 //this is bit 5
+            if (num3 < 0) {num3 += 32;}        //if negative immediate
+            num3 += 32;                          //this is bit 5
             printf("0x");
             printf("%04X\n", num1 + num2 + num3 + allCodes[1].hexop); //want this to print in hex//bit 5 is 1
             fprintf(pOutfile, "0x");
@@ -572,15 +670,16 @@ void AND(FILE* fp){
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
     }
-    else if (word[0] == 'R'){                         //if second source operand
-        num3 = num3 + numToBits((word[1] - '0'), 0, 2, 0);        //set bits 2-0 with SR2
+    else if (word[0] == 'R'){                                       //if second source operand
+        num3 = num3 + numToBits((word[1] - '0'), 0, 2, 0);          //set bits 2-0 with SR2
         printf("0x");
-        printf("%04X\n", num1 + num2 + num3 + allCodes[1].hexop); //want this to print in hex
+        printf("%04X\n", num1 + num2 + num3 + allCodes[1].hexop);   //want this to print in hex
         fprintf(pOutfile, "0x");
         fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[1].hexop);
     }
     BAdd += 2;
 }
+
 
 void BR(FILE* fp, char word1[]){
     char word[5] = {0, 0, 0, 0, 0};                             //this is to read file into
@@ -597,6 +696,9 @@ void BR(FILE* fp, char word1[]){
     else if(!strcmp(word1, "BRNZP")){num1 += 3584;}
 
     fscanf(fp, "%s", word);                                     //get the label
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if(isLabel(word)){                                          //if label
         offset = getAddress(word);                              //get address
         offset = (((offset - 2) - BAdd) / 2);                   //get offset from incremented PC
@@ -622,8 +724,11 @@ void BR(FILE* fp, char word1[]){
 void JMP(FILE* fp, char word1[]){
     int num = 0;
     char word[5] = {0, 0, 0, 0, 0};             //this is to read file into
-    fscanf(fp, "%s", word);                     //get the next word
     if(!strcmp(word1, "JMP")){
+        fscanf(fp, "%s", word);                     //get the next word
+        for(int i = 0; i < strlen(word); i++){
+            word[i] = toupper(word[i]);
+        }
         if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
             //printf("ERROR CODE 4: OTHER ERROR\n");
             exit(4);
@@ -648,6 +753,9 @@ void JSR(FILE* fp, char word1[]){
     char word[5] = {0, 0, 0, 0, 0};                             //this is to read file into
     int offset = 0;
     fscanf(fp, "%s", word);                                     //get the next word
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if(!strcmp(word1, "JSR")){                                  //JSR
         if(isLabel(word)){                                      //if label
             offset = getAddress(word);                          //get address
@@ -676,7 +784,7 @@ void JSR(FILE* fp, char word1[]){
             exit(4);
         }
         else{
-            num = num + numToBits((word[1] - '0'), 0, 5, 0);
+            num = num + numToBits((word[1] - '0'), 0, 8, 6);
             printf("0x");
             printf("%04X\n", num + allCodes[4].hexop); //want this to print in hex //adding 2048 because bit 11 is set
             fprintf(pOutfile, "0x");
@@ -687,11 +795,14 @@ void JSR(FILE* fp, char word1[]){
 }
 
 void LDB(FILE* fp){
-    char word[5] = {0, 0, 0, 0, 0};                     //this is to read file into
+    char word[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};       //this is to read file into
     int num1 = 0;                                       //this is the decimal rep of binary of DR
     int num2 = 0;                                       //this is the decimal rep of binary of BR
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -700,7 +811,22 @@ void LDB(FILE* fp){
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);             //set bits 11-9 with DR
     }
 
-    fscanf(fp, "%s", word);
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -709,9 +835,24 @@ void LDB(FILE* fp){
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);              //set bits 8-6 with BR
     }
 
-    fscanf(fp, "%s", word);                                             //get the offset
-    if((word[0] == 'x') || (word[0] == '#')){                           //if immediate operand
-        if(word[0] == 'x') {
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
+    if((word[0] == 'X') || (word[0] == '#')){                           //if immediate operand
+        if(word[0] == 'X') {
             num3 = (int)strtol(word + 1, NULL, 16);
         }
         else{
@@ -735,11 +876,14 @@ void LDB(FILE* fp){
 }
 
 void LDW(FILE* fp){
-    char word[5] = {0, 0, 0, 0, 0};                     //this is to read file into
+    char word[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};       //this is to read file into
     int num1 = 0;                                       //this is the decimal rep of binary of DR
     int num2 = 0;                                       //this is the decimal rep of binary of BR
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -748,7 +892,22 @@ void LDW(FILE* fp){
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);             //set bits 11-9 with DR
     }
 
-    fscanf(fp, "%s", word);
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -756,9 +915,25 @@ void LDW(FILE* fp){
     else{
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);              //set bits 8-6 with BR
     }
-    fscanf(fp, "%s", word);                                             //get the offset
-    if((word[0] == 'x') || (word[0] == '#')){                           //if immediate operand
-        if(word[0] == 'x') {
+
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
+    if((word[0] == 'X') || (word[0] == '#')){                           //if immediate operand
+        if(word[0] == 'X') {
             num3 = (int)strtol(word + 1, NULL, 16);
         }
         else{
@@ -770,7 +945,7 @@ void LDW(FILE* fp){
         }
         else {
             printf("0x");
-            printf("%04X\n", num1 + num2 + num3 + allCodes[6].hexop);   //want this to print in hex
+            printf("%04X\n", num1 + num2 + num3 + allCodes[6].hexop); //want this to print in hex
             fprintf(pOutfile, "0x");
             fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[6].hexop);
         }
@@ -782,11 +957,14 @@ void LDW(FILE* fp){
 }
 
 void LEA(FILE* fp){      //we need an error here for when the offset is too far away************************************************
-    char word[5] = {0, 0, 0, 0, 0};                     //this is to read file into
+    char word[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};   //this is to read file into
     int num1 = 0;                                       //this is the decimal rep of binary of DR
     int num2 = 0;                                       //this is the decimal rep of offset
     int offset = 0;                                     //this is to calculate offset of LEA
     fscanf(fp, "%s", word);
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -794,7 +972,23 @@ void LEA(FILE* fp){      //we need an error here for when the offset is too far 
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);        //set bits 11-9 with DR
     }
-    fscanf(fp, "%s", word);                                         //get the label or direct offset
+
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 23; i++){
+            word[i]=word[i+3];
+        }
+        word[23]=0;
+        word[24]=0;
+        word[25]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if(isLabel(word)){                                              //if label
         offset = getAddress(word);                                  //get address
         offset = (((offset - 2) - BAdd) / 2);                       //get offset from incremented PC
@@ -812,7 +1006,7 @@ void LEA(FILE* fp){      //we need an error here for when the offset is too far 
     }
     else{
         //printf("ERROR CODE 1: UNDEFINED LABEL\n");
-        if((word[0] == 'x') || (word[0] == '#')){
+        if((word[0] == 'X') || (word[0] == '#')){
             exit(4);
         }
         else{
@@ -829,7 +1023,7 @@ void RTI(FILE* fp){
 }
 
 void SHF(FILE* fp, char word1[]){
-    char word[5] = {0, 0, 0, 0, 0};             //this is to read file into
+    char word[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};             //this is to read file into
     int num1 = 0;
     int num2 = 0;
     int num3 = 0;
@@ -837,6 +1031,9 @@ void SHF(FILE* fp, char word1[]){
     if(!strcmp(word1, "RSHFA")){num1 = 48;}
 
     fscanf(fp, "%s", word);
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -845,7 +1042,22 @@ void SHF(FILE* fp, char word1[]){
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);        //set bits 11-9 DR
     }
 
-    fscanf(fp, "%s", word);
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -854,7 +1066,22 @@ void SHF(FILE* fp, char word1[]){
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);        //set bits 8-6 SR
     }
 
-    fscanf(fp, "%s", word);
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if(word[0] != '#') {
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -873,12 +1100,17 @@ void SHF(FILE* fp, char word1[]){
     }
     BAdd += 2;
 }
+
+
 void STB(FILE* fp){
-    char word[5] = {0, 0, 0, 0, 0};                     //this is to read file into
+    char word[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};                     //this is to read file into
     int num1 = 0;                                       //this is the decimal rep of binary of DR
     int num2 = 0;                                       //this is the decimal rep of binary of BR
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -887,7 +1119,22 @@ void STB(FILE* fp){
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);             //set bits 11-9 with DR
     }
 
-    fscanf(fp, "%s", word);
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -896,9 +1143,24 @@ void STB(FILE* fp){
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);              //set bits 8-6 with BR
     }
 
-    fscanf(fp, "%s", word);                                             //get the offset
-    if((word[0] == 'x') || (word[0] == '#')){                           //if immediate operand
-        if(word[0] == 'x') {
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
+    if((word[0] == 'X') || (word[0] == '#')){                           //if immediate operand
+        if(word[0] == 'X') {
             num3 = (int)strtol(word + 1, NULL, 16);
         }
         else{
@@ -921,12 +1183,16 @@ void STB(FILE* fp){
     }
     BAdd += 2;
 }
+
 void STW(FILE* fp){
-    char word[5] = {0, 0, 0, 0, 0};                     //this is to read file into
+    char word[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};                     //this is to read file into
     int num1 = 0;                                       //this is the decimal rep of binary of DR
     int num2 = 0;                                       //this is the decimal rep of binary of BR
     int num3 = 0;                                       //this is the decimal rep of offset
     fscanf(fp, "%s", word);
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -935,7 +1201,22 @@ void STW(FILE* fp){
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);             //set bits 11-9 with DR
     }
 
-    fscanf(fp, "%s", word);
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -944,9 +1225,24 @@ void STW(FILE* fp){
         num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);              //set bits 8-6 with BR
     }
 
-    fscanf(fp, "%s", word);                                             //get the offset
-    if((word[0] == 'x') || (word[0] == '#')){                           //if immediate operand
-        if(word[0] == 'x') {
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
+    if((word[0] == 'X') || (word[0] == '#')){                           //if immediate operand
+        if(word[0] == 'X') {
             num3 = (int)strtol(word + 1, NULL, 16);
         }
         else{
@@ -974,7 +1270,10 @@ void TRAP(FILE* fp, char word1[]){
     char word[5] = {0, 0, 0, 0, 0};                 //this is to read file into
     if(!strcmp(word1, "TRAP")){
         fscanf(fp, "%s", word);                     //get the next word
-        if(!strcmp(word, "x25")){
+        for(int i = 0; i < strlen(word); i++){
+            word[i] = toupper(word[i]);
+        }
+        if(!strcmp(word, "X25")){
             printf("0xF025\n");
             fprintf(pOutfile, "0xF025\n");
         }
@@ -991,11 +1290,14 @@ void TRAP(FILE* fp, char word1[]){
 }
 
 void XOR(FILE* fp, char word1[]){
-    char word[5] = {0, 0, 0, 0, 0};                     //this is to read file into
+    char word[12] = {0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0, 0, 0};           //this is to read file into
     int num1 = 0;                                       //this is the decimal rep of binary of DR
     int num2 = 0;                                       //this is the decimal rep of binary of SR1
     int num3 = 0;                                       //this is the decimal rep of binary of SR2 or imm5
     fscanf(fp, "%s", word);
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
     if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
         //printf("ERROR CODE 4: OTHER ERROR\n");
         exit(4);
@@ -1003,18 +1305,51 @@ void XOR(FILE* fp, char word1[]){
     else{
         num1 = num1 + numToBits((word[1] - '0'), 0, 11, 9);                  //set bits 11-9 with DR
     }
+
+    if((word[2]==',')&&(word[3]!=0)){//**********************************
+        for(int i = 0; i < 9; i++){
+            word[i]=word[i+3];
+        }
+        word[9]=0;
+        word[10]=0;
+        word[11]=0;
+    }
+
+    else {
+        fscanf(fp, "%s", word);
+    } //******************************************************************
+
+    for(int i = 0; i < strlen(word); i++){
+        word[i] = toupper(word[i]);
+    }
+    if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
+        //printf("ERROR CODE 4: OTHER ERROR\n");
+        exit(4);
+    }
+    else{
+        num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);               //set bits 8-6 with DR
+    }
+
     if(!strcmp(word1, "XOR")) {
-        fscanf(fp, "%s", word);
-        if((word[0] != 'R') || (!((word[1]-'0') >= 0)) || (!((word[1]-'0') < 8)) || (!((word[2] == ' ')||(word[2] == 0)||(word[2] == ',')||(word[2] == ';')))){ //needs to be a valid register
-            //printf("ERROR CODE 4: OTHER ERROR\n");
-            exit(4);
+
+        if((word[2]==',')&&(word[3]!=0)){//**********************************
+            for(int i = 0; i < 9; i++){
+                word[i]=word[i+3];
+            }
+            word[9]=0;
+            word[10]=0;
+            word[11]=0;
         }
-        else{
-            num2 = num2 + numToBits((word[1] - '0'), 0, 8, 6);               //set bits 8-6 with DR
+
+        else {
+            fscanf(fp, "%s", word);
+        } //******************************************************************
+
+        for(int i = 0; i < strlen(word); i++){
+            word[i] = toupper(word[i]);
         }
-        fscanf(fp, "%s", word);
-        if ((word[0] == 'x') || (word[0] == '#')) {                          //if immediate operand
-            if (word[0] == 'x') {
+        if ((word[0] == 'X') || (word[0] == '#')) {                          //if immediate operand
+            if (word[0] == 'X') {
                 num3 = (int) strtol(word + 1, NULL, 16);
             } else {
                 num3 = (int) strtol(word + 1, NULL, 10);
@@ -1041,11 +1376,11 @@ void XOR(FILE* fp, char word1[]){
             fprintf(pOutfile, "%04X\n", num1 + num2 + num3 + allCodes[13].hexop);
         }
     }
-    else{
+    else{                                                    //NOT
         printf("0x");
-        printf("%04X\n", num1 + 63 + allCodes[13].hexop);            //want this to print in hex
+        printf("%04X\n", num1 + num2 + 63 + allCodes[13].hexop);            //want this to print in hex
         fprintf(pOutfile, "0x");
-        fprintf(pOutfile, "%04X\n", num1 + 63 + allCodes[13].hexop);
+        fprintf(pOutfile, "%04X\n", num1 + num2 + 63 + allCodes[13].hexop);
     }
     BAdd += 2;
 }

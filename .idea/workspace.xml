@@ -11,29 +11,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="06093769-f213-43b0-9b21-86f439c1374e" name="Default" comment="sep23 assemble.c">
+    <list default="true" id="06093769-f213-43b0-9b21-86f439c1374e" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Assembler" afterPath="$PROJECT_DIR$/cmake-build-debug/Assembler" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Assembler.cbp" afterPath="$PROJECT_DIR$/cmake-build-debug/Assembler.cbp" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/C.includecache" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/C.includecache" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/DependInfo.cmake" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/DependInfo.cmake" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/build.make" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/build.make" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/cmake_clean.cmake" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/cmake_clean.cmake" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/depend.internal" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/depend.internal" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/depend.make" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/depend.make" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/link.txt" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/link.txt" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Assembler.dir/main.c.o" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" />
+      <change beforePath="$PROJECT_DIR$/assemble.c" afterPath="$PROJECT_DIR$/assemble.c" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" afterPath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" />
-      <change beforePath="$PROJECT_DIR$/main.c" afterPath="$PROJECT_DIR$/assemble.c" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -74,8 +55,8 @@
       <file leaf-file-name="assemble.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/assemble.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="14730">
-              <caret line="987" column="35" lean-forward="false" selection-start-line="987" selection-start-column="35" selection-end-line="987" selection-end-column="35" />
+            <state relative-caret-position="19050">
+              <caret line="1275" column="27" lean-forward="false" selection-start-line="1275" selection-start-column="27" selection-end-line="1275" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -91,6 +72,11 @@
       <find>lll</find>
       <find>.FILL</find>
       <find>exit</find>
+      <find>fscanf</find>
+      <find>'x'</find>
+      <find>ret</find>
+      <find>RET</find>
+      <find>&quot;RET&quot;</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -100,6 +86,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/main.c" />
+        <option value="$PROJECT_DIR$/assemble.c" />
       </list>
     </option>
   </component>
@@ -110,9 +97,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
+    <option name="x" value="15" />
     <option name="y" value="23" />
-    <option name="width" value="1324" />
-    <option name="height" value="646" />
+    <option name="width" value="1343" />
+    <option name="height" value="668" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -162,7 +150,7 @@
     </option>
   </component>
   <component name="RunManager" selected="Application.Assembler">
-    <configuration name="Assembler" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="source2.asm test.obj" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Assembler" TARGET_NAME="Assembler" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Assembler" RUN_TARGET_NAME="Assembler">
+    <configuration name="Assembler" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="shuffle.asm test.obj" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Assembler" TARGET_NAME="Assembler" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Assembler" RUN_TARGET_NAME="Assembler">
       <envs />
     </configuration>
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Assembler" RUN_TARGET_NAME="Assembler" EXPLICIT_BUILD_TARGET_NAME="all">
@@ -201,7 +189,9 @@
       <workItem from="1537733287723" duration="484000" />
       <workItem from="1537733839878" duration="305000" />
       <workItem from="1537734324847" duration="12000" />
-      <workItem from="1537734367100" duration="107000" />
+      <workItem from="1537734367100" duration="161000" />
+      <workItem from="1537734537962" duration="72000" />
+      <workItem from="1537737447905" duration="10929000" />
     </task>
     <task id="LOCAL-00001" summary="sep21">
       <created>1537547970718</created>
@@ -252,25 +242,33 @@
       <option name="project" value="LOCAL" />
       <updated>1537734105094</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="sep23 assemble.c">
+      <created>1537734495224</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1537734495224</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="91778000" />
+    <option name="totallyTimeSpent" value="102833000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1324" height="646" extended-state="0" />
+    <frame x="15" y="23" width="1343" height="668" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28625378" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.116902456" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23344947" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.47818792" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2979094" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39932886" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.49303135" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32550335" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -302,7 +300,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="56" />
+      <option name="time" value="74" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
@@ -376,6 +374,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/assemble.c">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="14805">
+          <caret line="987" column="35" lean-forward="false" selection-start-line="987" selection-start-column="35" selection-end-line="987" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assemble.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="14805">
+          <caret line="987" column="35" lean-forward="false" selection-start-line="987" selection-start-column="35" selection-end-line="987" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assemble.c">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
@@ -408,8 +422,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/assemble.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="14730">
-          <caret line="987" column="35" lean-forward="false" selection-start-line="987" selection-start-column="35" selection-end-line="987" selection-end-column="35" />
+        <state relative-caret-position="19050">
+          <caret line="1275" column="27" lean-forward="false" selection-start-line="1275" selection-start-column="27" selection-end-line="1275" selection-end-column="27" />
           <folding />
         </state>
       </provider>
